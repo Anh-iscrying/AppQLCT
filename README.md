@@ -10,9 +10,8 @@
 *   **Báo cáo:** Xem báo cáo chi tiêu theo ngày, tuần, tháng hoặc năm.
 *   **Biểu đồ:** Trực quan hóa dữ liệu chi tiêu bằng biểu đồ.
 *   **Nhắc nhở:** Nhận thông báo nhắc nhở về các khoản chi tiêu và ngân sách.
-*   **Xuất dữ liệu:** Xuất dữ liệu chi tiêu ra các định dạng khác nhau (ví dụ: CSV, Excel).
+*   **Xuất dữ liệu:** Xuất dữ liệu chi tiêu ra các định dạng khác nhau.
 *   **Bảo mật:** Bảo vệ dữ liệu chi tiêu bằng mật khẩu hoặc vân tay.
-*   **Đa nền tảng:** Hỗ trợ trên nhiều nền tảng (Android, iOS, Web, Windows, macOS, Linux).
 
 ## Công nghệ sử dụng
 
