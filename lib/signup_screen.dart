@@ -16,7 +16,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _password = '';
   String _confirmPassword = '';
   DateTime _selectedDate = DateTime.now();
-  String _tempPassword = ''; // Biến tạm thời để lưu trữ mật khẩu
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 SizedBox(height: 32.0),
 
-                // Trường Nhập Họ Tên
+                // Nhập Họ Tên
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Họ Tên',
@@ -76,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 SizedBox(height: 16.0),
 
-                // Trường Nhập Email
+                // Nhập Email
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -104,13 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 SizedBox(height: 16.0),
 
-                // GENDER SELECTION - NEED CUSTOM WIDGET
-                // Thay vì TextFormField, cần dùng một widget tùy chỉnh để chọn giới tính
-                // Ví dụ: Row với các RadioButton hoặc Button có style riêng
-
-                SizedBox(height: 16.0),
-
-                // Trường Nhập Ngày Sinh - Cần Custom DatePicker
+                // Ngày Sinh
                 GestureDetector(
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
@@ -144,10 +140,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 16.0),
 
-                // Trường Nhập Mật Khẩu
+                // Nhập Mật Khẩu
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Mật Khẩu',
@@ -158,9 +153,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                    suffixIcon: Icon(Icons.visibility_off, color: Colors.grey),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng nhập mật khẩu';
@@ -168,20 +173,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (value.length < 6) {
                       return 'Mật khẩu phải có ít nhất 6 ký tự';
                     }
+                    _password = value;
                     return null;
                   },
-                  onSaved: (value) {
-                    _tempPassword = value!; // Lưu vào biến tạm thời
-                    setState(() {}); // Cập nhật lại widget
-                  },
-                  autofillHints: null,
                 ),
                 SizedBox(height: 16.0),
 
-                // Trường Xác Nhận Mật Khẩu
+                // Xác nhận Mật Khẩu
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'Xác nhận mật khẩu',
+                    hintText: 'Xác nhận Mật Khẩu',
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -189,64 +190,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                    suffixIcon: Icon(Icons.visibility_off, color: Colors.grey),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: !_isConfirmPasswordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng xác nhận mật khẩu';
                     }
-                    if (value != _tempPassword) { // So sánh với biến tạm thời
+                    if (value != _password) {
                       return 'Mật khẩu không khớp';
                     }
+                    _confirmPassword = value;
                     return null;
                   },
-                  onSaved: (value) {
-                    _password = _tempPassword; // Gán lại cho biến password sau khi validate
-                    _confirmPassword = value!;
-                  },
-                  autofillHints: null,
                 ),
-
                 SizedBox(height: 32.0),
 
                 // Nút Đăng Ký
                 ElevatedButton(
                   onPressed: () async {
-                    _formKey.currentState!.save(); // Lưu trước khi validate
                     if (_formKey.currentState!.validate()) {
-
+                      _formKey.currentState!.save();
                       final authProvider = Provider.of<AuthProvider>(context, listen: false);
                       bool success = await authProvider.signUp(_name, _email, _password, _selectedDate);
 
                       if (success) {
-                        // Đăng ký thành công, tự động đăng nhập
-                        bool loginSuccess = await authProvider.signIn(_email, _password);
-                        if (loginSuccess) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => MainPage()),
-                          );
-                        } else {
-                          // Xử lý lỗi đăng nhập (nếu có)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Đăng nhập tự động thất bại.')),
-                          );
-                          Navigator.pushReplacementNamed(context, '/signin'); // Chuyển đến màn hình đăng nhập
-                        }
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => MainPage()),
+                        );
                       } else {
-                        // Xử lý lỗi đăng ký
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Đăng ký thất bại. Vui lòng thử lại.')),
                         );
-                        Navigator.pushReplacementNamed(context, '/signin'); // Chuyển đến màn hình đăng nhập
                       }
                     }
                   },
                   child: Text('Đăng Ký', style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
+<<<<<<< HEAD
                     backgroundColor: Colors.amber,
+=======
+                    backgroundColor: Color(0xFFE95B1E),
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
                     textStyle: TextStyle(fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0),
@@ -256,17 +253,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 SizedBox(height: 16.0),
 
-                // Đã có tài khoản? Đăng nhập ngay
+                // Đã có tài khoản? Đăng nhập
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Điều hướng đến màn hình Đăng Nhập
-                      Navigator.pushNamed(context, '/signin');
+                      Navigator.pop(context);
                     },
                     child: Text(
-                      "Đã có tài khoản? Đăng nhập ngay",
+                      "Đã có tài khoản? Đăng nhập",
                       style: TextStyle(
+<<<<<<< HEAD
                         color: Colors.black,
+=======
+                        color: Color(0xFFE95B1E),
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
                         fontWeight: FontWeight.bold,
                       ),
                     ),

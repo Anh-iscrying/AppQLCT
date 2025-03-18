@@ -30,7 +30,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     ),
       child: AppBar(
         title: Text('Lịch'),
+<<<<<<< HEAD
         backgroundColor: Colors.transparent,
+=======
+        backgroundColor: Color(0xFFF4A675),
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
       ),
     ),
         ),

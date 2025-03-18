@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import 'auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({Key? key}) : super(key: key);
+
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
@@ -13,8 +18,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime _selectedDate = DateTime.now();
 
   @override
+  void initState() {
+    super.initState();
+
+    // Lấy thông tin hiện tại từ AuthProvider khi mở màn hình
+    Future.microtask(() {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      setState(() {
+        _name = authProvider.name ?? '';
+        _email = authProvider.email ?? '';
+        _selectedDate = authProvider.dateOfBirth ?? DateTime.now();
+      });
+    });
+  }
+
+  // Hàm chọn ngày sinh
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       backgroundColor: Color(0xFFF5F5DC),
       appBar:PreferredSize(
         preferredSize: Size.fromHeight(65.0),
@@ -52,96 +90,118 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     color: Color(0xFF212121),
                   ),
                   textAlign: TextAlign.center,
+=======
+      backgroundColor: Colors.orangeAccent,
+      appBar: AppBar(
+        backgroundColor: Colors.deepOrangeAccent,
+        title: const Text(
+          'Chỉnh sửa thông tin',
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              // Họ Tên
+              TextFormField(
+                initialValue: _name,
+                decoration: const InputDecoration(
+                  hintText: 'Họ Tên',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
                 ),
-                SizedBox(height: 32.0),
+                style: const TextStyle(color: Colors.black),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập họ tên';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _name = value!;
+                },
+              ),
+              const SizedBox(height: 16.0),
 
-                // Trường Nhập Họ Tên
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Họ Tên',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24.0),
-                      borderSide: BorderSide.none,
+              // Email
+              TextFormField(
+                initialValue: _email,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(),
+                ),
+                style: const TextStyle(color: Colors.black),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Vui lòng nhập email';
+                  } else if (!value.contains('@')) {
+                    return 'Vui lòng nhập email hợp lệ';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _email = value!;
+                },
+              ),
+              const SizedBox(height: 16.0),
+
+              // Ngày sinh
+              GestureDetector(
+                onTap: () => _pickDate(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Ngày sinh',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập họ tên';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _name = value!;
-                  },
-                ),
-                SizedBox(height: 16.0),
-
-                // Trường Nhập Email
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24.0),
-                      borderSide: BorderSide.none,
+                    controller: TextEditingController(
+                      text: DateFormat('dd/MM/yyyy').format(_selectedDate),
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    style: const TextStyle(color: Colors.black),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Email không hợp lệ';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _email = value!;
-                  },
                 ),
-                SizedBox(height: 16.0),
+              ),
+              const SizedBox(height: 32.0),
 
-                // Trường Nhập Ngày Sinh - Cần Custom DatePicker
-                GestureDetector(
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _selectedDate,
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
+              // Nút lưu thông tin
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.deepOrangeAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+                    // Gọi updateProfile trong AuthProvider
+                    authProvider.updateProfile(
+                      name: _name,
+                      email: _email,
+                      dateOfBirth: _selectedDate,
                     );
-                    if (pickedDate != null && pickedDate != _selectedDate) {
-                      setState(() {
-                        _selectedDate = pickedDate;
-                      });
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24.0),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            DateFormat('dd/MM/yyyy').format(_selectedDate),
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        Icon(Icons.calendar_today, color: Colors.grey),
-                      ],
-                    ),
-                  ),
-                ),
 
+<<<<<<< HEAD
                 SizedBox(height: 24.0),
 
                 // Nút Lưu Thông Tin
@@ -185,6 +245,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ],
             ),
+=======
+                    // Thông báo cập nhật thành công
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Cập nhật thành công"),
+                          content: const Text("Thông tin cá nhân của bạn đã được cập nhật."),
+                          actions: [
+                            TextButton(
+                              child: const Text("OK"),
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Đóng dialog
+                                Navigator.pop(context); // Quay lại màn hình Account
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                child: const Text('Lưu thông tin'),
+              ),
+            ],
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
           ),
         ),
       ),

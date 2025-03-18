@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
+import 'main.dart';
+import '../providers/locale_provider.dart';
 
 class ChangeLanguageScreen extends StatefulWidget {
   @override
@@ -6,11 +10,14 @@ class ChangeLanguageScreen extends StatefulWidget {
 }
 
 class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
-  String _selectedLanguage = 'vi'; // Ngôn ngữ mặc định là tiếng Việt
+  String _selectedLanguage = 'vi';
 
   @override
   Widget build(BuildContext context) {
+    var loc = AppLocalizations.of(context)!;
+
     return Scaffold(
+<<<<<<< HEAD
       backgroundColor: Color(0xFFF5F5DC),
         appBar:PreferredSize(
         preferredSize: Size.fromHeight(65.0),
@@ -28,6 +35,12 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
       child: AppBar(
         title: Text('Chọn Ngôn Ngữ'),
         backgroundColor: Colors.transparent,
+=======
+      backgroundColor: Color(0xFFFCE4EC),
+      appBar: AppBar(
+        title: Text(loc.translate('language_screen_title')),
+        backgroundColor: Color(0xFFEF8341),
+>>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
       ),
     ),
         ),
@@ -38,7 +51,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Chọn ngôn ngữ bạn muốn sử dụng:",
+                loc.translate('select_language_text'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -46,120 +59,26 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
                 ),
               ),
               SizedBox(height: 24.0),
-
-              // Radio Button cho Tiếng Việt
               RadioListTile(
-                title: Text('Tiếng Việt'),
+                title: Text(loc.translate('vietnamese')),
                 value: 'vi',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
                   });
+                  _changeLanguage(context, 'vi');
                 },
               ),
-
-              // Radio Button cho Tiếng Anh
               RadioListTile(
-                title: Text('English'),
+                title: Text(loc.translate('english')),
                 value: 'en',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
                   setState(() {
                     _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
                   });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Pháp'),
-                value: 'fr',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Đức'),
-                value: 'ger',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Ý'),
-                value: 'ita',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Nhật'),
-                value: 'ja',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Hàn'),
-                value: 'ko',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
-                },
-              ),
-              RadioListTile(
-                title: Text('Tiếng Trung'),
-                value: 'chi',
-                groupValue: _selectedLanguage,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                    // TODO: Lưu ngôn ngữ đã chọn vào SharedPreferences hoặc Provider
-                    // Ví dụ:
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // prefs.setString('language', _selectedLanguage);
-                  });
+                  _changeLanguage(context, 'en');
                 },
               ),
             ],
@@ -167,5 +86,10 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
         ),
       ),
     );
+  }
+
+  void _changeLanguage(BuildContext context, String languageCode) {
+    final provider = Provider.of<LocaleProvider>(context, listen: false);
+    provider.setLocale(Locale(languageCode));
   }
 }

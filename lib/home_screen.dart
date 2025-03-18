@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
           },
           child: Text('Đăng nhập', style: TextStyle(fontSize: 16, color: Colors.white)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFF06292),
+            backgroundColor: Color(0xFFEFBA76),
             padding: EdgeInsets.symmetric(vertical: 16, horizontal: 48),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
@@ -67,12 +67,13 @@ class HomeScreen extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/signup');
           },
-          child: Text('Đăng ký', style: TextStyle(fontSize: 16, color: Color(0xFFF06292))),
+          child: Text('Đăng ký', style: TextStyle(fontSize: 16, color: Color(
+              0xFFEDBC84))),
           style: TextButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: 16, horizontal: 48),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
-              side: BorderSide(color: Color(0xFFF06292)),
+              side: BorderSide(color: Color(0xFFEF8341)),
             ),
           ),
         ),
@@ -87,7 +88,8 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             'Chào mừng trở lại!',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFE91E63)),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(
+                0xFFE95B1E)),
           ),
           SizedBox(height: 16),
           Text(
@@ -102,7 +104,7 @@ class HomeScreen extends StatelessWidget {
             },
             child: Text('Bắt đầu', style: TextStyle(fontSize: 16, color: Colors.white)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFF06292),
+              backgroundColor: Color(0xFFE95B1E),
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
