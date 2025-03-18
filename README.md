@@ -5,7 +5,6 @@
 ## 🚀 Tính năng chính
 
 - **Đăng ký, đăng nhập tài khoản**  : Tạo tài khoản mới và đăng nhập vào hệ thống một cách nhanh chóng.
-  
 - **Quên mật khẩu**  : Hỗ trợ khôi phục mật khẩu khi người dùng quên thông tin đăng nhập, thông qua email hoặc số điện thoại.
 
 - **Thay đổi mật khẩu**  : Cho phép người dùng cập nhật mật khẩu mới để tăng cường tính bảo mật cho tài khoản.
