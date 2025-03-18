@@ -82,63 +82,95 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
         .fold(0.0, (sum, tx) => sum + tx.amount);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expense Tracker'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Quản lý chi tiêu'),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Container(
+        color: Color(0xFFF5F5DC),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SummaryCard(
-                income: transactionProvider.totalIncome, // Tổng thu nhập từ trước đến nay
-                expense: transactionProvider.totalExpense, // Tổng chi phí từ trước đến nay
-                incomeByFilter: totalIncomeByFilter, // Truyền giá trị đã lọc
+                income: transactionProvider.totalIncome,
+                expense: transactionProvider.totalExpense,
+                incomeByFilter: totalIncomeByFilter,
                 expenseByFilter: totalExpenseByFilter
             ),
 
-            // Nút quản lý thu nhập
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IncomeExpenseScreen(
-                      selectedDate: _selectedDate,
-                      selectedFilter: _selectedFilter,
-                      selectedRange: _selectedRange,
-                      transactionType: TransactionType.income,
-                    ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Nút quản lý thu nhập
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => IncomeExpenseScreen(
+                          selectedDate: _selectedDate,
+                          selectedFilter: _selectedFilter,
+                          selectedRange: _selectedRange,
+                          transactionType: TransactionType.income,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Quản lý Thu nhập'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(150, 50),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                   ),
-                );
-              },
-              child: const Text('Quản lý Thu nhập'),
-            ),
+                ),
 
-            // Nút quản lý chi tiêu
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IncomeExpenseScreen(
-                      transactionType: TransactionType.expense,
-                      selectedDate: _selectedDate,
-                      selectedFilter: _selectedFilter,
-                      selectedRange: _selectedRange,
-                    ),
+                // Nút quản lý chi tiêu
+                const SizedBox(width: 20,),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => IncomeExpenseScreen(
+                          transactionType: TransactionType.expense,
+                          selectedDate: _selectedDate,
+                          selectedFilter: _selectedFilter,
+                          selectedRange: _selectedRange,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Quản lý Chi tiêu'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(150, 50),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
                   ),
-                );
-              },
-              child: const Text('Quản lý Chi tiêu'),
+                ),
+              ],
             ),
 
             // Bộ lọc thời gian
             TabBar(
               controller: _timeFilterTabController,
               isScrollable: true,
+              indicatorColor: Colors.amber,
+              labelColor: Colors.amber,
               tabs: const [
                 Tab(text: 'Ngày'),
                 Tab(text: 'Tuần'),
@@ -167,8 +199,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                         final pickedDate = await showDatePicker(
                           context: context,
                           initialDate: _selectedDate ?? DateTime.now(),
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                           initialDatePickerMode: DatePickerMode.year,
                         );
                         if (pickedDate != null) {
@@ -181,6 +213,7 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                         DateFormat('dd/MM/yyyy').format(_selectedDate!),
                         style: const TextStyle(fontSize: 16),
                       ),
+
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_forward),
@@ -221,8 +254,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: firstDayOfWeek,
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                         );
                         if (pickedDate != null) {
                           setState(() {
@@ -266,8 +299,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                         final pickedDate = await showDatePicker(
                           context: context,
                           initialDate: _selectedDate ?? DateTime.now(),
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                           initialDatePickerMode: DatePickerMode.year,
                         );
                         if (pickedDate != null) {
@@ -352,8 +385,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                       onPressed: () async {
                         final pickedRange = await showDateRangePicker(
                           context: context,
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                           initialDateRange: _selectedRange,
                         );
                         setState(() {
@@ -376,8 +409,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                       onTap: () async {
                         final pickedRange = await showDateRangePicker(
                           context: context,
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                           initialDateRange: _selectedRange,
                         );
                         setState(() {
@@ -399,8 +432,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
                       onPressed: () async {
                         final pickedRange = await showDateRangePicker(
                           context: context,
-                          firstDate: DateTime(2023),
-                          lastDate: DateTime(2025),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
                           initialDateRange: _selectedRange,
                         );
                         setState(() {

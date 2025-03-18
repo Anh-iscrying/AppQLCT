@@ -22,6 +22,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   DateTime _selectedDate = DateTime.now();
   Category _selectedCategory = Category.anuong; // Default Expense Category
 
+  bool _isTitleFilled = false;
   @override
   void initState() {
     super.initState();
@@ -84,15 +85,25 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chỉnh sửa Chi tiêu'),
+        backgroundColor: Colors.amber,
       ),
-      body: Padding(
+      body: Container(
+        color: Color(0xFFF5F5DC),
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Tiêu đề'),
+                decoration: InputDecoration(
+                  labelText: 'Tiêu đề',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black : Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _titleController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -100,12 +111,26 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   }
                   return null;
                 },
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
+                },
               ),
+
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Số tiền'),
+                decoration: InputDecoration(
+                  labelText: 'Số tiền',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black: Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _amountController,
-                keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập số tiền';
@@ -114,11 +139,33 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     return 'Vui lòng nhập số tiền hợp lệ';
                   }
                   return null;
+
+                },
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
                 },
               ),
+
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Ghi chú'),
+                decoration: InputDecoration(
+                  labelText: 'Ghi chú',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black : Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _noteController,
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
+                },
               ),
               const SizedBox(height: 10),
               Row(
@@ -129,9 +176,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                     ),
                   ),
                   TextButton(
-                    child: const Text(
-                      'Chọn ngày',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Icon(
+                      Icons.calendar_today,
+                      size: 20.0,
+                      color: Colors.amber,
                     ),
                     onPressed: _presentDatePicker,
                   ),
@@ -193,6 +241,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('Lưu Chi tiêu'),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black
+                ),
                 onPressed: _submitData,
               ),
             ],
