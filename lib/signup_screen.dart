@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'auth_provider.dart';
+import 'providers/auth_provider.dart';
 import 'main.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -21,7 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFCE4EC),
+      backgroundColor: Color(0xFFF5F5DC),
       appBar: null,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -243,10 +243,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                     }
                   },
-                  child: Text('Đăng Ký', style: TextStyle(fontSize: 18, color: Colors.white)),
+                  child: Text('Đăng Ký', style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color(0xFFF06292),
+                    backgroundColor: Colors.amber,
                     textStyle: TextStyle(fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0),
@@ -266,7 +266,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Text(
                       "Đã có tài khoản? Đăng nhập ngay",
                       style: TextStyle(
-                        color: Color(0xFFF06292),
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

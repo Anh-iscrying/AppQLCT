@@ -6,7 +6,7 @@ import 'account_screen.dart';
 import 'home_screen.dart';
 import 'calendar_screen.dart';
 import 'analysis_screen.dart';
-import 'auth_provider.dart';
+import 'providers/auth_provider.dart';
 import 'forget_password_screen.dart';
 import 'change_password_screen.dart';
 import 'edit_profile_screen.dart';

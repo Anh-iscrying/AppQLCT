@@ -15,11 +15,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFCE4EC),
-      appBar: AppBar(
+      backgroundColor: Color(0xFFF5F5DC),
+      appBar:PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.amber,
+                  Color(0xFFF5F5DC),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+      child: AppBar(
         title: Text('Thay Đổi Thông Tin'),
-        backgroundColor: Color(0xFFF06292),
+        backgroundColor: Colors.transparent,
       ),
+    ),
+    ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(24.0),
@@ -158,10 +173,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       );
                     }
                   },
-                  child: Text('Lưu Thông Tin', style: TextStyle(fontSize: 18, color: Colors.white)),
+                  child: Text('Lưu Thông Tin', style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color(0xFFF06292),
+                    backgroundColor: Colors.amber,
                     textStyle: TextStyle(fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0),

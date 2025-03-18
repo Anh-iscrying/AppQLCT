@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "924375505772",
+    "project_id": "qlct-3ff97",
+    "storage_bucket": "qlct-3ff97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924375505772:android:b073cae7093d97c093f149",
+        "android_client_info": {
+          "package_name": "com.example.demoqlct"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFKUTOb_RzGVNxVzePC-KZC96mwsoMG40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

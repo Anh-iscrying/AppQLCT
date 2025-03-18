@@ -11,11 +11,26 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFCE4EC),
-      appBar: AppBar(
+      backgroundColor: Color(0xFFF5F5DC),
+        appBar:PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+    child: Container(
+    decoration: BoxDecoration(
+    gradient: LinearGradient(
+    colors: [
+    Colors.amber,
+    Color(0xFFF5F5DC),
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    ),
+    ),
+      child: AppBar(
         title: Text('Chọn Ngôn Ngữ'),
-        backgroundColor: Color(0xFFF06292),
+        backgroundColor: Colors.transparent,
       ),
+    ),
+        ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24.0),

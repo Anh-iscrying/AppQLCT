@@ -14,11 +14,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
-      appBar: AppBar(
+      backgroundColor: Color(0xFFF5F5DC),
+        appBar:PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+    child: Container(
+    decoration: BoxDecoration(
+    gradient: LinearGradient(
+    colors: [
+    Colors.amber,
+    Color(0xFFF5F5DC),
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    ),
+    ),
+      child: AppBar(
         title: Text('Lịch'),
-        backgroundColor: Color(0xFFF06292),
+        backgroundColor: Colors.transparent,
       ),
+    ),
+        ),
       body: Column(
         children: [
           _buildCalendar(),

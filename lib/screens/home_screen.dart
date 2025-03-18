@@ -6,6 +6,7 @@ import '../providers/transaction_provider.dart';
 import '../widgets/transaction_list_home.dart';
 import 'income_expense_screen.dart';
 import '../widgets/summary_card.dart';
+import '../account_screen.dart';
 
 class HomeScreenMenu extends StatefulWidget {
   const HomeScreenMenu({Key? key}) : super(key: key);
@@ -97,6 +98,19 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
           ),
           child: AppBar(
             title: const Text('Quản lý chi tiêu'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.person),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AccountScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
             backgroundColor: Colors.transparent,
           ),
         ),
