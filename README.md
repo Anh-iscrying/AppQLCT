@@ -2,16 +2,34 @@
 
 Ứng dụng Quản lý Chi tiêu Cá nhân (AppQLCT) là một ứng dụng di động được thiết kế để giúp người dùng theo dõi, quản lý và kiểm soát chi tiêu hàng ngày một cách hiệu quả.
 
-## Tính năng chính
+## 🚀 Tính năng chính
 
-*   **Theo dõi chi tiêu:** Ghi lại các khoản chi tiêu một cách nhanh chóng và dễ dàng.
-*   **Phân loại chi tiêu:** Phân loại các khoản chi tiêu theo các danh mục khác nhau (ví dụ: ăn uống, đi lại, mua sắm,...).
-*   **Ngân sách:** Đặt ngân sách cho các danh mục chi tiêu và theo dõi tiến độ thực hiện.
-*   **Báo cáo:** Xem báo cáo chi tiêu theo ngày, tuần, tháng hoặc năm.
-*   **Biểu đồ:** Trực quan hóa dữ liệu chi tiêu bằng biểu đồ.
-*   **Nhắc nhở:** Nhận thông báo nhắc nhở về các khoản chi tiêu và ngân sách.
-*   **Xuất dữ liệu:** Xuất dữ liệu chi tiêu ra các định dạng khác nhau.
-*   **Bảo mật:** Bảo vệ dữ liệu chi tiêu bằng mật khẩu hoặc vân tay.
+- **Đăng ký, đăng nhập tài khoản**  : Tạo tài khoản mới và đăng nhập vào hệ thống một cách nhanh chóng.
+- **Quên mật khẩu**  : Hỗ trợ khôi phục mật khẩu khi người dùng quên thông tin đăng nhập, thông qua email hoặc số điện thoại.
+
+- **Thay đổi mật khẩu**  : Cho phép người dùng cập nhật mật khẩu mới để tăng cường tính bảo mật cho tài khoản.
+
+- **Thay đổi thông tin cá nhân**  : Cập nhật các thông tin cá nhân như tên, email, số điện thoại, giúp hồ sơ luôn chính xác.
+
+- **Thay đổi ngôn ngữ giao diện**  : Hỗ trợ đa ngôn ngữ, cho phép người dùng dễ dàng lựa chọn ngôn ngữ phù hợp.
+
+- **Quản lý chi tiêu cá nhân**  
+  - Thêm, sửa, xóa các khoản chi tiêu hàng ngày.  
+  - Phân loại chi tiêu theo danh mục (ăn uống, đi lại, mua sắm, giải trí, v.v.).
+
+- **Xem thống kê và báo cáo chi tiêu**  
+  Hiển thị các báo cáo chi tiêu chi tiết theo ngày, tuần, tháng hoặc năm.  
+  Cung cấp biểu đồ trực quan giúp dễ dàng theo dõi và đánh giá tình hình tài chính.
+
+- **Thay đổi số tiền quản lý**  
+  Thiết lập hoặc cập nhật tổng số tiền đang quản lý để kiểm soát chi tiêu hiệu quả hơn.
+
+- **Tìm kiếm chi tiêu**  
+  Tìm kiếm nhanh các khoản chi tiêu theo từ khóa, danh mục hoặc khoảng thời gian cụ thể.
+
+- **Xuất dữ liệu chi tiêu**  
+  Xuất toàn bộ dữ liệu chi tiêu ra các định dạng thông dụng như Excel hoặc PDF để lưu trữ hoặc chia sẻ.
+
 
 ## Công nghệ sử dụng
 
