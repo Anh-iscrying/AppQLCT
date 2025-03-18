@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
-import 'main.dart'; // Import để có thể điều hướng đến MainPage
+import 'main.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -12,12 +12,13 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
+  bool _obscurePassword = true; // Thêm biến để kiểm soát hiển thị mật khẩu
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFCE4EC),
-      appBar: null, // Ẩn AppBar cho màn hình đăng nhập
+      appBar: null,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(24.0),
@@ -26,7 +27,6 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Tiêu đề
                 Text(
                   "Chào mừng trở lại!",
                   style: TextStyle(
@@ -47,7 +47,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 SizedBox(height: 32.0),
 
-                // Trường Nhập Email
+                // Nhập Email
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -75,7 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 SizedBox(height: 16.0),
 
-                // Trường Nhập Mật Khẩu
+                // Nhập Mật Khẩu có ẩn/hiện
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Mật Khẩu',
@@ -86,9 +86,19 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-                    suffixIcon: Icon(Icons.visibility_off, color: Colors.grey),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vui lòng nhập mật khẩu';
@@ -99,6 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     _password = value!;
                   },
                 ),
+
                 SizedBox(height: 32.0),
 
                 // Nút Đăng Nhập
@@ -107,16 +118,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+                      authProvider.printAllUsers();
+
                       bool success = await authProvider.signIn(_email, _password);
 
                       if (success) {
-                        // Đăng nhập thành công, chuyển đến màn hình chính
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => MainPage()),
                         );
                       } else {
-                        // Xử lý lỗi đăng nhập
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.')),
                         );
@@ -126,7 +138,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Text('Đăng Nhập', style: TextStyle(fontSize: 18, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Color(0xFFF06292),
+                    backgroundColor: Color(0xFFEF8341),
                     textStyle: TextStyle(fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0),
@@ -136,17 +148,16 @@ class _SignInScreenState extends State<SignInScreen> {
 
                 SizedBox(height: 16.0),
 
-                // Chưa có tài khoản? Đăng ký ngay
+                // Đăng ký ngay
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Điều hướng đến màn hình Đăng Ký
                       Navigator.pushNamed(context, '/signup');
                     },
                     child: Text(
                       "Chưa có tài khoản? Đăng ký ngay",
                       style: TextStyle(
-                        color: Color(0xFFF06292),
+                        color: Color(0xFFF4A675),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -155,17 +166,16 @@ class _SignInScreenState extends State<SignInScreen> {
 
                 SizedBox(height: 8.0),
 
-                // Quên mật khẩu?
+                // Quên mật khẩu
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Điều hướng đến màn hình Quên mật khẩu
                       Navigator.pushNamed(context, '/forget-password');
                     },
                     child: Text(
                       "Quên mật khẩu?",
                       style: TextStyle(
-                        color: Color(0xFFF06292),
+                        color: Color(0xFFEF8341),
                         fontWeight: FontWeight.bold,
                       ),
                     ),

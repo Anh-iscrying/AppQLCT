@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+
+// Các màn hình và provider khác
 import 'signup_screen.dart';
 import 'signin_screen.dart';
 import 'account_screen.dart';
@@ -12,10 +15,17 @@ import 'change_password_screen.dart';
 import 'edit_profile_screen.dart';
 import 'change_language_screen.dart';
 
+// Thêm import cho đa ngôn ngữ
+import 'l10n/app_localizations.dart'; // File gen từ ARB
+import 'providers/locale_provider.dart'; // Provider quản lý locale
+
 void main() {
   runApp(
-    ChangeNotifierProvider( // Bọc MaterialApp trong ChangeNotifierProvider
-      create: (context) => AuthProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => LocaleProvider()),
+      ],
       child: MyApp(),
     ),
   );
@@ -24,13 +34,24 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Ứng dụng Quản Lý Chi Tiêu',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      home: MainPage(), // Sử dụng MainPage làm trang chủ
+      locale: localeProvider.locale, // Set locale ở đây!
+      supportedLocales: L10n.all,     // Danh sách locale hỗ trợ
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: MainPage(), // Trang chủ
       routes: {
         '/signup': (context) => SignUpScreen(),
         '/signin': (context) => SignInScreen(),
@@ -43,15 +64,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget { // Chuyển sang StatelessWidget
+class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>( // Lắng nghe trạng thái đăng nhập
+    return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.isLoggedIn) {
-          return MainScreen(); // Hiển thị màn hình chính
+          return MainScreen();
         } else {
-          return SignInScreen(); // Hiển thị màn hình đăng nhập
+          return SignInScreen();
         }
       },
     );
@@ -65,8 +86,10 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     CalendarScreen(),
@@ -86,9 +109,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý chi tiêu'),
+        title: Text(loc.translate('app_title')), // tiêu đề có thể dịch
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -102,14 +127,14 @@ class _MainScreenState extends State<MainScreen> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Trang Chủ',
+            label: loc.translate('home'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
-            label: 'Lịch',
+            label: loc.translate('calendar'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle, size: 40, color: Colors.green),
@@ -117,11 +142,11 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.pie_chart),
-            label: 'Phân Tích',
+            label: loc.translate('analysis'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Tài Khoản',
+            label: loc.translate('account'),
           ),
         ],
         currentIndex: _selectedIndex,
