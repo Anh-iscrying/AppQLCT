@@ -36,7 +36,8 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
   TimeFilter _selectedFilter = TimeFilter.day;
   DateTimeRange? _selectedRange;
   String _searchTerm = '';
-  Category? _selectedCategory;
+  Category? _selectedIncomeCategory;
+  Category? _selectedExpenseCategory;
 
   @override
   void initState() {
@@ -103,377 +104,418 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
       _selectedRange,
       widget.transactionType,
       _searchTerm,
-      _selectedCategory,
+      widget.transactionType == TransactionType.income ? _selectedIncomeCategory : _selectedExpenseCategory,
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.transactionType == TransactionType.income
-            ? 'Quản lý Thu nhập'
-            : 'Quản lý Chi tiêu'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                  widget.transactionType == TransactionType.income
-                      ? AddIncomeScreen()
-                      : AddExpenseScreen(),
-                ),
-              );
-            },
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: const InputDecoration(
-                labelText: 'Tìm kiếm theo tên',
-                prefixIcon: Icon(Icons.search),
+          child: AppBar(
+            title: Text(widget.transactionType == TransactionType.income
+                ? 'Quản lý Thu nhập'
+                : 'Quản lý Chi tiêu'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      widget.transactionType == TransactionType.income
+                          ? AddIncomeScreen()
+                          : AddExpenseScreen(),
+                    ),
+                  );
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchTerm = value;
-                });
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButton<Category>(
-              value: _selectedCategory,
-              hint: const Text('Chọn danh mục'),
-              onChanged: (Category? newValue) {
-                setState(() {
-                  _selectedCategory = newValue;
-                });
-              },
-              items: _buildCategoryDropdownMenuItems(),
-            ),
-          ),
-          TabBar(
-            controller: _timeFilterTabController,
-            isScrollable: true,
-            tabs: const [
-              Tab(text: 'Ngày'),
-              Tab(text: 'Tuần'),
-              Tab(text: 'Tháng'),
-              Tab(text: 'Năm'),
-              Tab(text: 'Khoảng thời gian'),
             ],
+            backgroundColor: Colors.transparent,
           ),
-
-          // Bộ lọc thời gian
-          if (_selectedFilter == TimeFilter.day && _selectedDate != null)
+        ),
+      ),
+      body: Container(
+        color: const Color(0xFFF5F5DC),
+        child: Column(
+          children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate =
-                            _selectedDate!.subtract(const Duration(days: 1));
-                      });
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate ?? DateTime.now(),
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                        initialDatePickerMode: DatePickerMode.year,
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          _selectedDate = pickedDate;
-                        });
-                      }
-                    },
-                    child: Text(
-                      DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                      style: const TextStyle(fontSize: 16),
+                  Expanded(
+                    flex: 7,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'Tìm kiếm theo tên',
+
+                          prefixIcon: Icon(Icons.search,),
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _searchTerm = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate =
-                            _selectedDate!.add(const Duration(days: 1));
-                      });
-                    },
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: DropdownButton<Category>(
+                        value: widget.transactionType == TransactionType.income ? _selectedIncomeCategory : _selectedExpenseCategory,
+                        hint: const Text('Bộ lọc'),
+                        onChanged: (Category? newValue) {
+                          setState(() {
+                            if (widget.transactionType == TransactionType.income) {
+                              _selectedIncomeCategory = newValue;
+                            } else {
+                              _selectedExpenseCategory = newValue;
+                            }
+                          });
+                        },
+                        items: _buildCategoryDropdownMenuItems(),
+                        isExpanded: true,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          if (_selectedFilter == TimeFilter.week && _selectedDate != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate = _getPreviousWeek(_selectedDate!);
-                      });
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      DateTime initialDate = _selectedDate ?? DateTime.now();
-                      DateTime firstDayOfWeek = initialDate.subtract(Duration(
-                          days: initialDate.weekday -
-                              1 >
-                              0
-                              ? initialDate.weekday - 1
-                              : 6));
 
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: firstDayOfWeek,
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          _selectedDate = pickedDate;
-                        });
-                      }
-                    },
-                    child: Text(
-                      " ${DateFormat('dd/MM/yyyy').format(_getFirstDayOfWeek(_selectedDate!))} - ${DateFormat('dd/MM/yyyy').format(_getLastDayOfWeek(_selectedDate!))}",
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate = _getNextWeek(_selectedDate!);
-                      });
-                    },
-                  ),
-                ],
-              ),
+            TabBar(
+              controller: _timeFilterTabController,
+              isScrollable: true,
+              indicatorColor: Colors.amber,
+              labelColor: Colors.amber,
+              tabs: const [
+                Tab(text: 'Ngày'),
+                Tab(text: 'Tuần'),
+                Tab(text: 'Tháng'),
+                Tab(text: 'Năm'),
+                Tab(text: 'Khoảng thời gian'),
+              ],
             ),
-          if (_selectedFilter == TimeFilter.month && _selectedDate != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate = DateTime(_selectedDate!.year,
-                            _selectedDate!.month - 1, 1);
-                      });
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate ?? DateTime.now(),
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                        initialDatePickerMode: DatePickerMode.year,
-                      );
-                      if (pickedDate != null) {
+            // Bộ lọc thời gian
+            if (_selectedFilter == TimeFilter.day && _selectedDate != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
                         setState(() {
                           _selectedDate =
-                              DateTime(pickedDate.year, pickedDate.month, 1);
+                              _selectedDate!.subtract(const Duration(days: 1));
                         });
-                      }
-                    },
-                    child: Text(
-                      DateFormat('MM/yyyy').format(_selectedDate!),
-                      style: const TextStyle(fontSize: 16),
+                      },
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate = DateTime(_selectedDate!.year,
-                            _selectedDate!.month + 1, 1);
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          if (_selectedFilter == TimeFilter.year && _selectedDate != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate =
-                            DateTime(_selectedDate!.year - 1, 1, 1);
-                      });
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate ?? DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2099),
-                        initialDatePickerMode: DatePickerMode.year,
-                      );
-                      if (pickedDate != null) {
+                    InkWell(
+                      onTap: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDatePickerMode: DatePickerMode.year,
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(_selectedDate!),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {
                         setState(() {
-                          _selectedDate = DateTime(pickedDate.year, 1, 1);
+                          _selectedDate =
+                              _selectedDate!.add(const Duration(days: 1));
                         });
-                      }
-                    },
-                    child: Text(
-                      "${_selectedDate!.year}",
-                      style: const TextStyle(fontSize: 16),
+                      },
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      setState(() {
-                        _selectedDate =
-                            DateTime(_selectedDate!.year + 1, 1, 1);
-                      });
-                    },
-                  ),
-                ],
+                  ],
+                ),
+              ),
+            if (_selectedFilter == TimeFilter.week && _selectedDate != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = _getPreviousWeek(_selectedDate!);
+                        });
+                      },
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        DateTime initialDate = _selectedDate ?? DateTime.now();
+                        DateTime firstDayOfWeek = initialDate.subtract(Duration(
+                            days: initialDate.weekday -
+                                1 >
+                                0
+                                ? initialDate.weekday - 1
+                                : 6));
+
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: firstDayOfWeek,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                      child: Text(
+                        " ${DateFormat('dd/MM/yyyy').format(_getFirstDayOfWeek(_selectedDate!))} - ${DateFormat('dd/MM/yyyy').format(_getLastDayOfWeek(_selectedDate!))}",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = _getNextWeek(_selectedDate!);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            if (_selectedFilter == TimeFilter.month && _selectedDate != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = DateTime(_selectedDate!.year,
+                              _selectedDate!.month - 1, 1);
+                        });
+                      },
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDatePickerMode: DatePickerMode.year,
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedDate =
+                                DateTime(pickedDate.year, pickedDate.month, 1);
+                          });
+                        }
+                      },
+                      child: Text(
+                        DateFormat('MM/yyyy').format(_selectedDate!),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = DateTime(_selectedDate!.year,
+                              _selectedDate!.month + 1, 1);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            if (_selectedFilter == TimeFilter.year && _selectedDate != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate =
+                              DateTime(_selectedDate!.year - 1, 1, 1);
+                        });
+                      },
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDatePickerMode: DatePickerMode.year,
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedDate = DateTime(pickedDate.year, 1, 1);
+                          });
+                        }
+                      },
+                      child: Text(
+                        "${_selectedDate!.year}",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate =
+                              DateTime(_selectedDate!.year + 1, 1, 1);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            if (_selectedFilter == TimeFilter.range)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () async {
+                        final pickedRange = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDateRange: _selectedRange,
+                        );
+                        setState(() {
+                          _selectedRange = pickedRange;
+                          if (pickedRange != null) {
+                            _selectedDate = _selectedRange!.start;
+                          }
+                        });
+
+                        setState(() {
+                          _selectedRange = DateTimeRange(
+                              start: _selectedRange!.start
+                                  .subtract(const Duration(days: 7)),
+                              end: _selectedRange!.end
+                                  .subtract(const Duration(days: 7)));
+                        });
+                      },
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        final pickedRange = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDateRange: _selectedRange,
+                        );
+                        setState(() {
+                          _selectedRange = pickedRange;
+                          if (pickedRange != null) {
+                            _selectedDate = _selectedRange!.start;
+                          }
+                        });
+                      },
+                      child: Text(
+                        _selectedRange != null
+                            ? "${DateFormat('dd/MM/yyyy').format(_selectedRange!.start)} - ${DateFormat('dd/MM/yyyy').format(_selectedRange!.end)}"
+                            : "Khoảng thời gian",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () async {
+                        final pickedRange = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2099),
+                          initialDateRange: _selectedRange,
+                        );
+                        setState(() {
+                          _selectedRange = pickedRange;
+                          if (pickedRange != null) {
+                            _selectedDate = _selectedRange!.start;
+                          }
+                        });
+
+                        setState(() {
+                          _selectedRange = DateTimeRange(
+                              start: _selectedRange!.start
+                                  .add(const Duration(days: 7)),
+                              end: _selectedRange!.end
+                                  .add(const Duration(days: 7)));
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            // Chart
+            SizedBox(
+              height: 200,
+              child: Chart(
+                transactionType: widget.transactionType,
+                transactions: transactions,
               ),
             ),
-          if (_selectedFilter == TimeFilter.range)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () async {
-                      final pickedRange = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                        initialDateRange: _selectedRange,
-                      );
-                      setState(() {
-                        _selectedRange = pickedRange;
-                        if (pickedRange != null) {
-                          _selectedDate = _selectedRange!.start;
-                        }
-                      });
-
-                      setState(() {
-                        _selectedRange = DateTimeRange(
-                            start: _selectedRange!.start
-                                .subtract(const Duration(days: 7)),
-                            end: _selectedRange!.end
-                                .subtract(const Duration(days: 7)));
-                      });
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final pickedRange = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                        initialDateRange: _selectedRange,
-                      );
-                      setState(() {
-                        _selectedRange = pickedRange;
-                        if (pickedRange != null) {
-                          _selectedDate = _selectedRange!.start;
-                        }
-                      });
-                    },
-                    child: Text(
-                      _selectedRange != null
-                          ? "${DateFormat('dd/MM/yyyy').format(_selectedRange!.start)} - ${DateFormat('dd/MM/yyyy').format(_selectedRange!.end)}"
-                          : "Khoảng thời gian",
-                      style: const TextStyle(fontSize: 16),
+            Expanded(
+              child: TransactionList(
+                transactions: transactions,
+                onDelete: (id, type) {
+                  transactionProvider.deleteTransaction(id, type);
+                },
+                onEdit: (transaction) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                      widget.transactionType == TransactionType.income
+                          ? EditIncomeScreen(transaction: transaction)
+                          : EditExpenseScreen(transaction: transaction),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () async {
-                      final pickedRange = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2023),
-                        lastDate: DateTime(2025),
-                        initialDateRange: _selectedRange,
-                      );
-                      setState(() {
-                        _selectedRange = pickedRange;
-                        if (pickedRange != null) {
-                          _selectedDate = _selectedRange!.start;
-                        }
-                      });
-
-                      setState(() {
-                        _selectedRange = DateTimeRange(
-                            start: _selectedRange!.start
-                                .add(const Duration(days: 7)),
-                            end: _selectedRange!.end
-                                .add(const Duration(days: 7)));
-                      });
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
 
-          // Chart
-          SizedBox(
-            height: 200,
-            child: Chart(
-              transactionType: widget.transactionType,
-              transactions: transactions,
-            ),
-          ),
-          Expanded(
-            child: TransactionList(
-              transactions: transactions,
-              onDelete: (id, type) {
-                transactionProvider.deleteTransaction(id, type);
-              },
-              onEdit: (transaction) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                    widget.transactionType == TransactionType.income
-                        ? EditIncomeScreen(transaction: transaction)
-                        : EditExpenseScreen(transaction: transaction),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -584,8 +626,15 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
       List<Transaction> transactions, Category selectedCategory) {
     return transactions.where((tx) => tx.category == selectedCategory).toList();
   }
+
   List<DropdownMenuItem<Category>> _buildCategoryDropdownMenuItems() {
-    List<Category> categories = Category.values;
+    List<Category> categories = Category.values.toList();
+    if (widget.transactionType == TransactionType.income) {
+      categories.removeWhere((element) => element == Category.anuong || element == Category.giaitri || element == Category.suckhoe || element ==Category.giaoduc || element == Category.quatang || element ==Category.taphoa || element ==Category.giadinh || element ==Category.diichuyen);
+    }else{
+      categories.removeWhere((element) => element == Category.luong || element == Category.thuong);
+    }
+
     return categories
         .map((Category category) => DropdownMenuItem<Category>(
       value: category,
@@ -593,6 +642,7 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
     ))
         .toList();
   }
+
 
   DateTime _getFirstDayOfWeek(DateTime date) {
     return date.subtract(Duration(
@@ -612,4 +662,5 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
   DateTime _getNextWeek(DateTime date) {
     return date.add(const Duration(days: 7));
   }
+
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction.dart';
+import '../screens/transaction_detail_screen.dart'; // Import trang chi tiết
+import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
@@ -26,40 +28,58 @@ class TransactionList extends StatelessWidget {
           margin:
           const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           elevation: 3,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: _getColorForCategory(transaction.category),
-              radius: 30,
-              child: Padding(
-                padding: const EdgeInsets.all(6),
-                child: FittedBox(
-                  child: Text(
-                    '${transaction.amount.toStringAsFixed(0)}',
-                    style: const TextStyle(color: Colors.white),
+          child: InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => TransactionDetailDialog(transaction: transaction),
+              );
+            },
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: _getColorForCategory(transaction.category),
+                radius: 30,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: FittedBox(
+                    child: Text(
+                      '${transaction.category.name}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
-            ),
-            title: Text(transaction.title,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle:
-            Text(DateFormat('dd/MM/yyyy').format(transaction.date)),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () {
-                    onEdit(transaction);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    onDelete(transaction.id, transaction.type);
-                  },
-                ),
-              ],
+              title: Text(transaction.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    NumberFormat('#,##0 VNĐ').format(transaction.amount),
+                    style: const TextStyle(color: Colors.black, fontSize: 18,),
+                  ),
+                  Text(DateFormat('dd/MM/yyyy').format(transaction.date)),
+                ],
+              ),
+
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      onEdit(transaction);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      onDelete(transaction.id, transaction.type);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         );

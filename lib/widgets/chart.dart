@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/transaction.dart';
+import 'package:intl/intl.dart';
 
 class Chart extends StatelessWidget {
   final TransactionType transactionType;
@@ -27,10 +28,10 @@ class Chart extends StatelessWidget {
       return PieChartSectionData(
         color: _getColorForCategory(entry.key),
         value: entry.value,
-        title: '${entry.value.toStringAsFixed(0)}\n(${percentage.toStringAsFixed(1)}%)',
+        title: '${NumberFormat('#,##0').format(entry.value)}\n(${percentage.toStringAsFixed(1)}%)',
         radius: 50,
         titleStyle: const TextStyle(
-          fontSize: 12, // Reduce font size for better fit
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),

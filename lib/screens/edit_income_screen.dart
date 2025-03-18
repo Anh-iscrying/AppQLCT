@@ -22,6 +22,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   DateTime _selectedDate = DateTime.now();
   Category _selectedCategory = Category.luong; // Default Income Category
 
+  bool _isTitleFilled = false;
   @override
   void initState() {
     super.initState();
@@ -82,17 +83,42 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chỉnh sửa Thu nhập'),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(65.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Chỉnh sửa Thu nhập'),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ),
-      body: Padding(
+      body: Container(
+        color: Color(0xFFF5F5DC),
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Tiêu đề'),
+                decoration: InputDecoration(
+                  labelText: 'Tiêu đề',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black : Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _titleController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -100,12 +126,26 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
                   }
                   return null;
                 },
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
+                },
               ),
+
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Số tiền'),
+                decoration: InputDecoration(
+                  labelText: 'Số tiền',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black: Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _amountController,
-                keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập số tiền';
@@ -114,11 +154,33 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
                     return 'Vui lòng nhập số tiền hợp lệ';
                   }
                   return null;
+
+                },
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
                 },
               ),
+
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Ghi chú'),
+                decoration: InputDecoration(
+                  labelText: 'Ghi chú',
+                  labelStyle: TextStyle(
+                    color: _isTitleFilled ? Colors.black : Colors.black,
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 controller: _noteController,
+                cursorColor: Colors.amber,
+                onChanged: (text) {
+                  setState(() {
+                    _isTitleFilled = text.isNotEmpty;
+                  });
+                },
               ),
               const SizedBox(height: 10),
               Row(
@@ -129,9 +191,10 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
                     ),
                   ),
                   TextButton(
-                    child: const Text(
-                      'Chọn ngày',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Icon(
+                      Icons.calendar_today,
+                      size: 20.0,
+                      color: Colors.amber,
                     ),
                     onPressed: _presentDatePicker,
                   ),
@@ -169,6 +232,10 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 child: const Text('Lưu Thu nhập'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  foregroundColor: Colors.black,
+                ),
                 onPressed: _submitData,
               ),
             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 class SummaryCard extends StatelessWidget {
   final double income;
   final double expense;
@@ -25,10 +25,11 @@ class SummaryCard extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
-              '${balance.toStringAsFixed(0)} đ',
+              '${NumberFormat('#,##0').format(balance)} VNĐ',
               style: TextStyle(
-                  fontSize: 24,
-                  color: balance >= 0 ? Colors.green : Colors.red),
+                fontSize: 24,
+                color: balance >= 0 ? Colors.green : Colors.red,
+              ),
             ),
             const SizedBox(height: 10),
             Row(
@@ -37,20 +38,25 @@ class SummaryCard extends StatelessWidget {
                 Column(
                   children: [
                     Text('Thu nhập', style: TextStyle(color: Colors.green)),
-                    Text('${incomeByFilter.toStringAsFixed(0)} đ',
-                        style: const TextStyle(color: Colors.green)),
+                    Text(
+                      '${NumberFormat('#,##0').format(incomeByFilter)} VNĐ',
+                      style: const TextStyle(color: Colors.green),
+                    ),
                   ],
                 ),
                 Column(
                   children: [
                     Text('Chi phí', style: TextStyle(color: Colors.red)),
-                    Text('${expenseByFilter.toStringAsFixed(0)} đ',
-                        style: const TextStyle(color: Colors.red)),
+                    Text(
+                      '${NumberFormat('#,##0').format(expenseByFilter)} VNĐ',
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ],
                 ),
               ],
             ),
           ],
+
         ),
       ),
     );
