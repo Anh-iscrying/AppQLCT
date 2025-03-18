@@ -6,17 +6,13 @@
 
 - **Đăng ký, đăng nhập tài khoản**  : Tạo tài khoản mới và đăng nhập vào hệ thống một cách nhanh chóng.
   
-- **Quên mật khẩu**  
-  Hỗ trợ khôi phục mật khẩu khi người dùng quên thông tin đăng nhập, thông qua email hoặc số điện thoại.
+- **Quên mật khẩu**  : Hỗ trợ khôi phục mật khẩu khi người dùng quên thông tin đăng nhập, thông qua email hoặc số điện thoại.
 
-- **Thay đổi mật khẩu**  
-  Cho phép người dùng cập nhật mật khẩu mới để tăng cường tính bảo mật cho tài khoản.
+- **Thay đổi mật khẩu**  : Cho phép người dùng cập nhật mật khẩu mới để tăng cường tính bảo mật cho tài khoản.
 
-- **Thay đổi thông tin cá nhân**  
-  Cập nhật các thông tin cá nhân như tên, email, số điện thoại, giúp hồ sơ luôn chính xác.
+- **Thay đổi thông tin cá nhân**  : Cập nhật các thông tin cá nhân như tên, email, số điện thoại, giúp hồ sơ luôn chính xác.
 
-- **Thay đổi ngôn ngữ giao diện**  
-  Hỗ trợ đa ngôn ngữ, cho phép người dùng dễ dàng lựa chọn ngôn ngữ phù hợp.
+- **Thay đổi ngôn ngữ giao diện**  : Hỗ trợ đa ngôn ngữ, cho phép người dùng dễ dàng lựa chọn ngôn ngữ phù hợp.
 
 - **Quản lý chi tiêu cá nhân**  
   - Thêm, sửa, xóa các khoản chi tiêu hàng ngày.  
