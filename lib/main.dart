@@ -15,15 +15,15 @@ import 'change_password_screen.dart';
 import 'edit_profile_screen.dart';
 import 'change_language_screen.dart';
 
-// Thêm import cho đa ngôn ngữ
-import 'l10n/app_localizations.dart'; // File gen từ ARB
-import 'providers/locale_provider.dart'; // Provider quản lý locale
+// Đa ngôn ngữ
+import 'l10n/app_localizations.dart';
+import 'providers/locale_provider.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => MyAuthProvider()),
         ChangeNotifierProvider(create: (context) => LocaleProvider()),
       ],
       child: MyApp(),
@@ -38,20 +38,21 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Ứng dụng Quản Lý Chi Tiêu',
+      title: 'Expense Manager',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      locale: localeProvider.locale, // Set locale ở đây!
-      supportedLocales: L10n.all,     // Danh sách locale hỗ trợ
+      locale: localeProvider.locale, // Gán locale từ provider
+      supportedLocales: L10n.all,    // Các locale hỗ trợ
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
       ],
-      home: MainPage(), // Trang chủ
+      home: MainPage(),
       routes: {
         '/signup': (context) => SignUpScreen(),
         '/signin': (context) => SignInScreen(),
@@ -67,7 +68,7 @@ class MyApp extends StatelessWidget {
 class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
+    return Consumer<MyAuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.isLoggedIn) {
           return MainScreen();
@@ -87,15 +88,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     CalendarScreen(),
     Text(
       'Index 2: Thêm',
-      style: optionStyle,
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
     ),
     AnalysisScreen(),
     AccountScreen(),
@@ -109,16 +107,16 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(loc.translate('app_title')), // tiêu đề có thể dịch
+        title: Text(loc.translate('app_title')), // Đã dịch app title
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              Provider.of<AuthProvider>(context, listen: false).signOut();
+              Provider.of<MyAuthProvider>(context, listen: false).signOut();
             },
           ),
         ],
@@ -130,23 +128,23 @@ class _MainScreenState extends State<MainScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: loc.translate('home'),
+            label: loc.translate('home'),      // Trang chủ / Home
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
-            label: loc.translate('calendar'),
+            label: loc.translate('calendar'),  // Lịch / Calendar
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle, size: 40, color: Colors.green),
-            label: '',
+            label: '',                         // Không có label cho nút giữa
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.pie_chart),
-            label: loc.translate('analysis'),
+            label: loc.translate('analysis'),  // Phân tích / Analysis
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: loc.translate('account'),
+            label: loc.translate('account'),   // Tài khoản / Account
           ),
         ],
         currentIndex: _selectedIndex,

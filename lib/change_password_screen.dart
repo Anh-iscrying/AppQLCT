@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'auth_provider.dart';
+import 'providers/auth_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -13,6 +13,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -24,30 +25,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Đổi mật khẩu'),
+        title: const Text('Đổi mật khẩu'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
               if (authProvider.currentUser != null)
                 Text(
-                  'Xin chào, ${authProvider.currentUser!['name']}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  'Xin chào, ${authProvider.currentUser!.displayName ?? 'Người dùng'}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Mật khẩu cũ
               TextFormField(
                 controller: _oldPasswordController,
-                decoration: InputDecoration(labelText: 'Mật khẩu cũ'),
+                decoration: const InputDecoration(labelText: 'Mật khẩu cũ'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -60,11 +61,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               // Mật khẩu mới
               TextFormField(
                 controller: _newPasswordController,
-                decoration: InputDecoration(labelText: 'Mật khẩu mới'),
+                decoration: const InputDecoration(labelText: 'Mật khẩu mới'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập mật khẩu mới';
+                  }
+                  if (value.length < 6) {
+                    return 'Mật khẩu phải có ít nhất 6 ký tự';
                   }
                   return null;
                 },
@@ -73,7 +77,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               // Xác nhận mật khẩu mới
               TextFormField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Xác nhận mật khẩu mới'),
+                decoration: const InputDecoration(labelText: 'Xác nhận mật khẩu mới'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -86,62 +90,44 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final oldPassword = _oldPasswordController.text.trim();
                     final newPassword = _newPasswordController.text.trim();
 
-                    bool success = authProvider.changePassword(oldPassword, newPassword);
+                    bool success = await authProvider.changePassword(oldPassword, newPassword);
 
                     if (!success) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Mật khẩu cũ không đúng!')),
+                        const SnackBar(content: Text('Mật khẩu cũ không đúng!')),
                       );
                       return;
                     }
-<<<<<<< HEAD
-                  },
-                  child: Text('Đổi Mật Khẩu', style: TextStyle(fontSize: 18, color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-                    backgroundColor: Colors.amber,
-                    textStyle: TextStyle(fontWeight: FontWeight.bold),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24.0),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-=======
-
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Đổi mật khẩu thành công"),
-                          content: Text("Bạn đã đổi mật khẩu thành công."),
-                          actions: [
-                            TextButton(
-                              child: Text("OK"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    Navigator.pop(context);
                   }
                 },
-                child: Text('Đổi mật khẩu'),
+                child: const Text('Đổi Mật Khẩu', style: TextStyle(fontSize: 18, color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: Colors.amber,
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24.0),
+                  ),
+                ),
               ),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
           ),
         ),
       ),

@@ -1,168 +1,84 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AuthProvider extends ChangeNotifier {
+class MyAuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
-  Map<String, dynamic>? _currentUser; // Người dùng hiện tại sau khi đăng nhập
-  final List<Map<String, dynamic>> _users = []; // Danh sách tất cả user đã đăng ký
+  User? _currentUser;
 
-  bool get isLoggedIn => _isLoggedIn;
-  Map<String, dynamic>? get currentUser => _currentUser;
+  bool get isLoggedIn => FirebaseAuth.instance.currentUser != null;
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 
-  // Thêm các getter cho name, email và birthDate để dùng bên EditProfilePage
-  String get name => _currentUser?['name'] ?? '';
-  String get email => _currentUser?['email'] ?? '';
-  DateTime? get dateOfBirth => _currentUser?['birthDate'];
+  String get name => _currentUser?.displayName ?? '';
+  String get email => _currentUser?.email ?? '';
 
-  /// Đăng ký tài khoản mới
   Future<bool> signUp(String name, String email, String password, DateTime birthDate) async {
-    // Kiểm tra email đã tồn tại chưa
-    final userExists = _users.any((user) => user['email'] == email);
+    // This method is no longer responsible for creating the user.
+    // The SignUpScreen now handles that using FirebaseAuth.instance.createUserWithEmailAndPassword.
 
-    if (userExists) {
-      print('Email đã tồn tại!');
-      return false;
-    }
+    // **TODO:** Consider adding logic here to save additional user information (name, birthDate) to Firestore
+    // after the user is successfully created in Firebase Authentication.
 
-    // Tạo user mới có thêm trường transactions
-    final newUser = {
-      'name': name,
-      'email': email,
-      'password': password,
-      'birthDate': birthDate,
-      'transactions': <Map<String, dynamic>>[], // Quản lý giao dịch riêng cho user này
-    };
+    return true; // Just return true since the actual user creation is done in the SignUpScreen.
+  }
 
-    _users.add(newUser);
-
-    print('Đã đăng ký user mới: $newUser');
-    print('Danh sách user hiện tại: $_users');
-
-    await Future.delayed(Duration(seconds: 1)); // Giả lập delay
+  Future<bool> signIn(String email, String password) async {
+    // This method is no longer needed as the SignInScreen now directly uses FirebaseAuth.instance.signInWithEmailAndPassword.
+    // You can remove it or leave it as an empty function.
     return true;
   }
 
-  /// Đăng nhập
-  Future<bool> signIn(String email, String password) async {
-    print('Đang đăng nhập với: $email / $password');
-
-    try {
-      final user = _users.firstWhere(
-            (u) => u['email'] == email && u['password'] == password,
-      );
-
-      _isLoggedIn = true;
-      _currentUser = user;
-      notifyListeners();
-
-      print('Đăng nhập thành công với user: $_currentUser');
-      return true;
-    } catch (e) {
-      print('Đăng nhập thất bại. Email hoặc mật khẩu không đúng.');
-      return false;
-    }
-  }
-
   /// Đăng xuất
-  void signOut() {
-    _isLoggedIn = false;
-    _currentUser = null;
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
     notifyListeners();
     print('Đã đăng xuất!');
   }
 
-  /// In danh sách user cho dễ debug
-  void printAllUsers() {
-    print('Danh sách users hiện tại: $_users');
-  }
-
-  /// Thêm giao dịch mới cho user hiện tại
-  void addTransaction(String type, double amount, {String? note}) {
-    if (_currentUser == null) {
-      print('Chưa đăng nhập!');
-      return;
-    }
-
-    final transaction = {
-      'type': type, // 'income' hoặc 'expense'
-      'amount': amount,
-      'note': note ?? '',
-      'date': DateTime.now(),
-    };
-
-    // Thêm vào transactions của currentUser
-    _currentUser!['transactions'].add(transaction);
-
-    // Đồng bộ lại _users list (cập nhật user bên trong _users)
-    final userIndex = _users.indexWhere((user) => user['email'] == _currentUser!['email']);
-    if (userIndex != -1) {
-      _users[userIndex] = _currentUser!;
-    }
-
-    notifyListeners();
-    print('Đã thêm giao dịch: $transaction');
-  }
-
-  /// Lấy danh sách giao dịch của user hiện tại
-  List<Map<String, dynamic>> getTransactions() {
-    if (_currentUser == null) {
-      print('Chưa đăng nhập!');
-      return [];
-    }
-
-    return List<Map<String, dynamic>>.from(_currentUser!['transactions']);
-  }
-
   /// Đổi mật khẩu user hiện tại
-  bool changePassword(String currentPassword, String newPassword) {
-    if (_currentUser == null) {
-      print('Chưa đăng nhập!');
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('Chưa đăng nhập!');
+        return false;
+      }
+
+      // Re-authenticate user (required for changing password)
+      AuthCredential credential = EmailAuthProvider.credential(email: user.email!, password: currentPassword);
+      await user.reauthenticateWithCredential(credential);
+
+      // Update password
+      await user.updatePassword(newPassword);
+      print('Đã đổi mật khẩu thành công!');
+      return true;
+    } catch (e) {
+      print('Lỗi đổi mật khẩu: $e');
       return false;
     }
-
-    if (_currentUser!['password'] != currentPassword) {
-      print('Mật khẩu hiện tại không đúng!');
-      return false;
-    }
-
-    // Cập nhật mật khẩu mới
-    _currentUser!['password'] = newPassword;
-
-    // Đồng bộ lại _users list
-    final userIndex = _users.indexWhere((user) => user['email'] == _currentUser!['email']);
-    if (userIndex != -1) {
-      _users[userIndex] = _currentUser!;
-    }
-
-    notifyListeners();
-    print('Đã đổi mật khẩu thành công!');
-    return true;
   }
 
   /// Cập nhật thông tin user (cho EditProfilePage)
-  void updateProfile({
+  Future<void> updateProfile({
     required String name,
     required String email,
     required DateTime dateOfBirth,
-  }) {
-    if (_currentUser == null) {
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
       print('Chưa đăng nhập!');
       return;
     }
 
-    print('Cập nhật thông tin user...');
+    try {
+      // Update display name
+      await user.updateDisplayName(name);
 
-    // Cập nhật thông tin người dùng hiện tại
-    _currentUser!['name'] = name;
-    _currentUser!['email'] = email;
-    _currentUser!['birthDate'] = dateOfBirth;
+      // **TODO:** Consider saving the updated email and birthDate to Firestore as well.
 
-    // Đồng bộ lại danh sách user (giả lập cơ sở dữ liệu)
-    final userIndex = _users.indexWhere((user) => user['email'] == _currentUser!['email']);
-    if (userIndex != -1) {
-      _users[userIndex] = _currentUser!;
+      notifyListeners();
+      print('Cập nhật hồ sơ thành công!');
+    } catch (e) {
+      print('Lỗi cập nhật hồ sơ: $e');
     }
-
-    notifyListeners();
-    print('Cập nhật hồ sơ thành công: $_currentUser');
   }
 }

@@ -1,12 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< HEAD
 import 'providers/auth_provider.dart';
 import 'main.dart'; // Import để có thể điều hướng đến MainPage
-=======
-import 'auth_provider.dart';
-import 'main.dart';
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -18,26 +14,22 @@ class _SignInScreenState extends State<SignInScreen> {
   String _email = '';
   String _password = '';
   bool _obscurePassword = true; // Thêm biến để kiểm soát hiển thị mật khẩu
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: Color(0xFFF5F5DC),
+      backgroundColor: const Color(0xFFF5F5DC),
       appBar: null, // Ẩn AppBar cho màn hình đăng nhập
-=======
-      backgroundColor: Color(0xFFFCE4EC),
-      appBar: null,
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                const Text(
                   "Chào mừng trở lại!",
                   style: TextStyle(
                     fontSize: 24,
@@ -46,8 +38,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8.0),
-                Text(
+                const SizedBox(height: 8.0),
+                const Text(
                   "Đăng nhập để tiếp tục",
                   style: TextStyle(
                     fontSize: 16,
@@ -55,7 +47,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 32.0),
+                const SizedBox(height: 32.0),
 
                 // Nhập Email
                 TextFormField(
@@ -67,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -83,7 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     _email = value!;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
 
                 // Nhập Mật Khẩu có ẩn/hiện
                 TextFormField(
@@ -95,7 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -120,47 +112,55 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                 ),
 
-                SizedBox(height: 32.0),
+                const SizedBox(height: 32.0),
 
                 // Nút Đăng Nhập
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: _email.trim(),
+                          password: _password.trim(),
+                        );
 
-                      authProvider.printAllUsers();
-
-                      bool success = await authProvider.signIn(_email, _password);
-
-                      if (success) {
+                        // Đăng nhập thành công
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => MainPage()),
                         );
-                      } else {
+                      } on FirebaseAuthException catch (e) {
+                        print('Lỗi đăng nhập: ${e.code} - ${e.message}');
+                        setState(() {
+                          _errorMessage = e.message;
+                        });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.')),
+                          SnackBar(content: Text('Đăng nhập thất bại: ${_errorMessage ?? "Vui lòng kiểm tra lại email và mật khẩu."}')),
+                        );
+                      } catch (e) {
+                        print('Lỗi không xác định: $e');
+                        setState(() {
+                          _errorMessage = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đăng nhập thất bại: ${_errorMessage ?? "Đã có lỗi xảy ra."}')),
                         );
                       }
                     }
                   },
-                  child: Text('Đăng Nhập', style: TextStyle(fontSize: 18, color: Colors.black)),
+                  child: const Text('Đăng Nhập', style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
-<<<<<<< HEAD
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Colors.amber,
-=======
-                    backgroundColor: Color(0xFFEF8341),
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
-                    textStyle: TextStyle(fontWeight: FontWeight.bold),
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.0),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
 
                 // Đăng ký ngay
                 Center(
@@ -168,21 +168,17 @@ class _SignInScreenState extends State<SignInScreen> {
                     onTap: () {
                       Navigator.pushNamed(context, '/signup');
                     },
-                    child: Text(
+                    child: const Text(
                       "Chưa có tài khoản? Đăng ký ngay",
                       style: TextStyle(
-<<<<<<< HEAD
                         color: Colors.black,
-=======
-                        color: Color(0xFFF4A675),
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
 
                 // Quên mật khẩu
                 Center(
@@ -190,14 +186,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     onTap: () {
                       Navigator.pushNamed(context, '/forget-password');
                     },
-                    child: Text(
+                    child: const Text(
                       "Quên mật khẩu?",
                       style: TextStyle(
-<<<<<<< HEAD
                         color: Colors.black,
-=======
-                        color: Color(0xFFEF8341),
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
                         fontWeight: FontWeight.bold,
                       ),
                     ),

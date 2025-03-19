@@ -2,5 +2,11 @@
   "language_screen_title": "Chọn Ngôn Ngữ",
   "select_language_text": "Chọn ngôn ngữ bạn muốn sử dụng:",
   "vietnamese": "Tiếng Việt",
-  "english": "Tiếng Anh"
+  "english": "Tiếng Anh",
+
+  "app_title": "Ứng dụng Quản Lý Chi Tiêu",
+  "home": "Trang Chủ",
+  "calendar": "Lịch",
+  "analysis": "Phân Tích",
+  "account": "Tài Khoản"
 }

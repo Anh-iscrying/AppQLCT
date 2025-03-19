@@ -14,30 +14,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5DC),
-        appBar:PreferredSize(
-        preferredSize: Size.fromHeight(65.0),
-    child: Container(
-    decoration: BoxDecoration(
-    gradient: LinearGradient(
-    colors: [
-    Colors.amber,
-    Color(0xFFF5F5DC),
-    ],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    ),
-    ),
-      child: AppBar(
-        title: Text('Lịch'),
-<<<<<<< HEAD
-        backgroundColor: Colors.transparent,
-=======
-        backgroundColor: Color(0xFFF4A675),
->>>>>>> d569476e8bd6c44b72edb10c85a9114b343a5644
-      ),
-    ),
+      backgroundColor: const Color(0xFFF5F5DC),
+      appBar:PreferredSize(
+        preferredSize: const Size.fromHeight(65.0),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Lịch'),
+            backgroundColor: Colors.transparent,
+          ),
         ),
+      ),
       body: Column(
         children: [
           _buildCalendar(),
@@ -85,7 +81,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   // Widget hiển thị danh sách giao dịch
   Widget _buildTransactionList() {
-    return Center(
+    return const Center(
       child: Text('Chọn một ngày để xem giao dịch'),
     );
   }

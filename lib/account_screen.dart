@@ -13,7 +13,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
 
     // Định nghĩa ThemeData cho chế độ sáng và tối
     final ThemeData theme = _isDarkMode

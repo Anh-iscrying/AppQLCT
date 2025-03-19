@@ -2,5 +2,11 @@
   "language_screen_title": "Select Language",
   "select_language_text": "Choose the language you want to use:",
   "vietnamese": "Vietnamese",
-  "english": "English"
+  "english": "English",
+
+  "app_title": "Expense Management App",
+  "home": "Home",
+  "calendar": "Calendar",
+  "analysis": "Analysis",
+  "account": "Account"
 }

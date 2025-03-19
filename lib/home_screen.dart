@@ -5,7 +5,7 @@ import 'providers/auth_provider.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    final authProvider = Provider.of<MyAuthProvider>(context);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
