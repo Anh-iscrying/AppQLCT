@@ -1,5 +1,19 @@
 {
-  "select_language_text": "Chọn ngôn ngữ",
+  "select_language": "Chọn Ngôn Ngữ",
+  "select_language_text": "Chọn ngôn ngữ bạn muốn sử dụng",
   "vietnamese": "Tiếng Việt",
-  "english": "Tiếng Anh"
+  "english": "Tiếng Anh",
+
+  "app_title": "Quản lý chi tiêu",
+  "account_description": "Chỉnh sửa thông tin cá nhân cùng các cài đặt khác",
+  "monthly_income": "Tiền hàng tháng",
+  "account": "Tài Khoản",
+  "change_password": "Đổi Mật Khẩu",
+  "language": "Ngôn Ngữ",
+  "dark_mode": "Chế Độ Tối",
+  "history": "Lịch Sử",
+  "export_csv": "Xuất CSV",
+  "currency_rates": "Tỷ Giá Tiền Tệ",
+  "logout": "Đăng xuất",
+  "no_name": "Không có tên"
 }

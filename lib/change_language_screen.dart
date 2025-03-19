@@ -12,8 +12,15 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
   String _selectedLanguage = 'vi';
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Lấy locale hiện tại từ LocaleProvider và cập nhật _selectedLanguage
+    _selectedLanguage = Provider.of<LocaleProvider>(context).locale.languageCode;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var loc = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5DC),
@@ -31,7 +38,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             ),
           ),
           child: AppBar(
-            title: const Text('Chọn Ngôn Ngữ'),
+            title: Text(loc?.translate('select_language') ?? 'Chọn Ngôn Ngữ'),
             backgroundColor: Colors.transparent,
           ),
         ),
@@ -42,35 +49,42 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                loc.translate('select_language_text'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF212121),
-                ),
-              ),
+              if (loc != null)
+                Text(
+                  loc.translate('select_language_text'),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF212121),
+                  ),
+                )
+              else
+                const Text("Loading..."),
               const SizedBox(height: 24.0),
               RadioListTile(
-                title: Text(loc.translate('vietnamese')),
+                title: Text(loc?.translate('vietnamese') ?? "Vietnamese"),
                 value: 'vi',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                  });
-                  _changeLanguage(context, 'vi');
+                  if (value != null) {
+                    setState(() {
+                      _selectedLanguage = value;
+                    });
+                    _changeLanguage(context, value);
+                  }
                 },
               ),
               RadioListTile(
-                title: Text(loc.translate('english')),
+                title: Text(loc?.translate('english') ?? "English"),
                 value: 'en',
                 groupValue: _selectedLanguage,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedLanguage = value!;
-                  });
-                  _changeLanguage(context, 'en');
+                  if (value != null) {
+                    setState(() {
+                      _selectedLanguage = value;
+                    });
+                    _changeLanguage(context, value);
+                  }
                 },
               ),
             ],

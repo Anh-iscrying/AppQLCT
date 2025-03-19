@@ -19,15 +19,27 @@ class AppLocalizations {
   late Map<String, String> _localizedStrings;
 
   Future<bool> load() async {
-    String jsonString =
-    await rootBundle.loadString('l10n/i18n_${locale.languageCode}.json');
-    Map<String, dynamic> jsonMap = json.decode(jsonString);
+    try {
+      String jsonString =
+      await rootBundle.loadString('l10n/i18n_${locale.languageCode}.json');
+      Map<String, dynamic> jsonMap = json.decode(jsonString);
 
-    _localizedStrings = jsonMap.map((key, value) {
-      return MapEntry(key, value.toString());
-    });
+      if (jsonMap.isEmpty) {
+        print('File localization rỗng: l10n/i18n_${locale.languageCode}.json');
+        _localizedStrings = {};
+        return false;
+      }
 
-    return true;
+      _localizedStrings = jsonMap.map((key, value) {
+        return MapEntry(key, value.toString());
+      });
+
+      return true;
+    } catch (e) {
+      print('Lỗi load file localization: $e');
+      _localizedStrings = {}; // Hoặc set một giá trị mặc định
+      return false; // Báo hiệu load thất bại
+    }
   }
 
   String translate(String key) {
@@ -52,7 +64,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'vi'].contains(locale.languageCode);
+    return AppLocalizations.supportedLocales.contains(locale); // Check using supportedLocales
   }
 
   @override

@@ -18,6 +18,30 @@ class MyTransaction {
     required this.category,
     required this.note,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'amount': amount,
+      'date': date.toIso8601String(),
+      'type': type.toString(),
+      'category': category.toString(),
+      'note': note,
+    };
+  }
+
+  factory MyTransaction.fromMap(Map<String, dynamic> map) {
+    return MyTransaction(
+      id: map['id'],
+      title: map['title'],
+      amount: map['amount'],
+      date: DateTime.parse(map['date']),
+      type: TransactionType.values.firstWhere((e) => e.toString() == map['type']),
+      category: Category.values.firstWhere((e) => e.toString() == map['category']),
+      note: map['note'],
+    );
+  }
 }
 
 enum TransactionType {
@@ -70,7 +94,7 @@ extension CategoryExtension on Category {
   }
 }
 
-enum IncomeCategory{
+enum IncomeCategory {
   luong,
   thuong,
   khac,
@@ -91,7 +115,7 @@ extension IncomeCategoryExtension on IncomeCategory {
   }
 }
 
-enum ExpenseCategory{
+enum ExpenseCategory {
   anuong,
   giaitri,
   suckhoe,

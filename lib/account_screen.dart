@@ -14,8 +14,8 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
-    final user = FirebaseAuth.instance.currentUser;
+    //final authProvider = Provider.of<MyAuthProvider>(context, listen: false); // Removed listen: false
+    //final user = FirebaseAuth.instance.currentUser; // No longer needed directly, access through provider
 
     // Định nghĩa ThemeData cho chế độ sáng và tối
     final ThemeData theme = _isDarkMode
@@ -111,62 +111,68 @@ class _AccountScreenState extends State<AccountScreen> {
                 color: theme.cardColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Text(
-                          user?.displayName ?? 'Không có tên', // Hiển thị tên người dùng
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: theme.textTheme.titleMedium?.color),
-                          textAlign: TextAlign.center,
-                        ),
-                        subtitle: Text(
-                          'Tiền hàng tháng',
-                          style: TextStyle(
-                              color: theme.textTheme.bodyMedium?.color,
-                              fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(
-                            'https://i.pinimg.com/originals/0c/3b/3a/0c3b3ab9cf9c9a14f6c9dfafac358f33.jpg'),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        '30.000.000 VND',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: theme.textTheme.bodyLarge?.color),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 24),
-                      _buildOption(context, Icons.person, 'Tài Khoản', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      _buildOption(context, Icons.lock, 'Đổi Mật Khẩu', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      _buildOption(context, Icons.language, 'Ngôn Ngữ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      _buildOption(context, Icons.brightness_2, 'Chế Độ Tối', showSwitch: true, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode, theme: theme),
-                      _buildOption(context, Icons.history, 'Lịch Sử', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      _buildOption(context, Icons.save_alt, 'Xuất CSV', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      _buildOption(context, Icons.attach_money, 'Tỷ Giá Tiền Tệ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-                      SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () {
-                          authProvider.signOut(); // ĐÃ SỬA LỖI
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignInScreen()),
-                          );
-                        },
-                        child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                        ),
-                      ),
-                    ],
+                  child: Consumer<MyAuthProvider>( // Use Consumer
+                      builder: (context, authProvider, child) {
+                        final user = authProvider.currentUser; // Get user from the provider
+
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                user?.displayName ?? 'Không có tên', // Hiển thị tên người dùng from authProvider
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: theme.textTheme.titleMedium?.color),
+                                textAlign: TextAlign.center,
+                              ),
+                              subtitle: Text(
+                                'Tiền hàng tháng',
+                                style: TextStyle(
+                                    color: theme.textTheme.bodyMedium?.color,
+                                    fontSize: 14),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(
+                                  'https://i.pinimg.com/originals/0c/3b/3a/0c3b3ab9cf9c9a14f6c9dfafac358f33.jpg'),
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              '30.000.000 VND',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: theme.textTheme.bodyLarge?.color),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 24),
+                            _buildOption(context, Icons.person, 'Tài Khoản', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            _buildOption(context, Icons.lock, 'Đổi Mật Khẩu', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            _buildOption(context, Icons.language, 'Ngôn Ngữ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            _buildOption(context, Icons.brightness_2, 'Chế Độ Tối', showSwitch: true, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode, theme: theme),
+                            _buildOption(context, Icons.history, 'Lịch Sử', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            _buildOption(context, Icons.save_alt, 'Xuất CSV', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            _buildOption(context, Icons.attach_money, 'Tỷ Giá Tiền Tệ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
+                            SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: () {
+                                authProvider.signOut(); // ĐÃ SỬA LỖI
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SignInScreen()),
+                                );
+                              },
+                              child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
                   ),
                 ),
               ),
