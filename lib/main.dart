@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import firebase_core
 
 // Các màn hình và provider khác
 import 'signup_screen.dart';
@@ -19,7 +20,10 @@ import 'change_language_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/locale_provider.dart';
 
-void main() {
+void main() async { // Thêm async
+  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo Flutter được khởi tạo
+  await Firebase.initializeApp(); // Khởi tạo Firebase
+
   runApp(
     MultiProvider(
       providers: [
@@ -127,25 +131,21 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: loc.translate('home'),      // Trang chủ / Home
-          ),
+              icon: Icon(Icons.home),
+              label: loc.translate('home')),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: loc.translate('calendar'),  // Lịch / Calendar
-          ),
+              icon: Icon(Icons.calendar_month),
+              label: loc.translate('calendar')),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_circle, size: 40, color: Colors.green),
-            label: '',                         // Không có label cho nút giữa
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart),
-            label: loc.translate('analysis'),  // Phân tích / Analysis
-          ),
+              icon: Icon(Icons.pie_chart),
+              label: loc.translate('analysis')),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: loc.translate('account'),   // Tài khoản / Account
-          ),
+              icon: Icon(Icons.person),
+              label: loc.translate('account')),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.green,
