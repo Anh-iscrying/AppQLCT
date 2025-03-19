@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< HEAD
-import '../providers/transaction_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-=======
-import 'package:firebase_core/firebase_core.dart'; // Import firebase_core
->>>>>>> c1d76072e5774d74fdaa7ce1d235d6383481f81f
 
 import 'signup_screen.dart';
 import 'signin_screen.dart';
@@ -22,26 +17,12 @@ import '../screens/home_screen.dart';
 
 import 'l10n/app_localizations.dart';
 import 'providers/locale_provider.dart';
+import '../providers/transaction_provider.dart';
 
-<<<<<<< HEAD
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-=======
-void main() async { // Thêm async
-  WidgetsFlutterBinding.ensureInitialized(); // Đảm bảo Flutter được khởi tạo
-  await Firebase.initializeApp(); // Khởi tạo Firebase
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => MyAuthProvider()),
-        ChangeNotifierProvider(create: (context) => LocaleProvider()),
-      ],
-      child: MyApp(),
-    ),
->>>>>>> c1d76072e5774d74fdaa7ce1d235d6383481f81f
   );
   runApp(MyApp());
 }
@@ -51,6 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => TransactionProvider()),
         ChangeNotifierProvider(create: (context) => MyAuthProvider()),
         ChangeNotifierProvider(create: (context) => LocaleProvider()),
       ],
@@ -59,15 +41,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
-        localizationsDelegates: [
-          AppLocalizations.delegate, // Sử dụng delegate
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: L10n.all, // Sử dụng danh sách locales từ L10n
-        locale: Provider.of<LocaleProvider>(context).locale,
-        initialRoute: '/', // Route mặc định
+        initialRoute: '/',
         routes: {
           '/': (context) => AuthCheck(),
           '/signin': (context) => SignInScreen(),
@@ -82,98 +56,46 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthCheck extends StatelessWidget {
+class AuthCheck extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return HomeScreen(uid: snapshot.data!.uid);
-        } else {
-          return SignInScreen();
-        }
-      },
-    );
+  _AuthCheckState createState() => _AuthCheckState();
+}
+
+class _AuthCheckState extends State<AuthCheck> {
+  bool _isLoggedIn = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
   }
-<<<<<<< HEAD
-}
-=======
-}
 
-class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  static List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    CalendarScreen(),
-    Text(
-      'Index 2: Thêm',
-      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-    ),
-    AnalysisScreen(),
-    AccountScreen(),
-  ];
-
-  void _onItemTapped(int index) {
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isLoggedIn = prefs.getBool('isLoggedIn') ?? false; // Mặc định là false nếu không tìm thấy
     setState(() {
-      _selectedIndex = index;
+      _isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
+    if (_isLoading) {
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(loc.translate('app_title')), // Đã dịch app title
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              Provider.of<MyAuthProvider>(context, listen: false).signOut();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: loc.translate('home')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month),
-              label: loc.translate('calendar')),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 40, color: Colors.green),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.pie_chart),
-              label: loc.translate('analysis')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: loc.translate('account')),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Color(0xFFF5F5F5),
-        onTap: _onItemTapped,
-      ),
-    );
+    if (_isLoggedIn && FirebaseAuth.instance.currentUser != null) {
+      return HomeScreen(uid: FirebaseAuth.instance.currentUser!.uid);
+    } else {
+      return SignInScreen();
+    }
   }
 }
->>>>>>> c1d76072e5774d74fdaa7ce1d235d6383481f81f
+
+// Ví dụ hàm đăng xuất (đặt ở nơi thích hợp trong ứng dụng của bạn):
+Future<void> signOut() async {
+  await FirebaseAuth.instance.signOut();
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('isLoggedIn', false);
+}

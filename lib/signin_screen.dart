@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/home_screen.dart'; // Đảm bảo đường dẫn chính xác
 
 class SignInScreen extends StatefulWidget {
@@ -121,35 +122,38 @@ class _SignInScreenState extends State<SignInScreen> {
                         );
 
                         if (userCredential.user != null) {
-                          // Đăng nhập thành công
-                          // Điều hướng đến HomeScreen và truyền UID
+                          final user = userCredential.user!;
+
+                          // Kiểm tra xem email đã được xác minh chưa
+                          if (!user.emailVerified) {
+                            await FirebaseAuth.instance.signOut(); // Đăng xuất người dùng
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Vui lòng xác minh email của bạn trước khi đăng nhập.')),
+                            );
+                            return; // Không điều hướng đến HomeScreen
+                          }
+
+                          // Lưu trạng thái đăng nhập vào SharedPreferences
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true);
+
+                          // Email đã được xác minh, điều hướng đến HomeScreen
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  HomeScreen(uid: userCredential.user!.uid),
+                              builder: (context) => HomeScreen(uid: user.uid), // Truyền UID!
                             ),
                           );
                         }
                       } on FirebaseAuthException catch (e) {
                         print('Lỗi đăng nhập: ${e.code} - ${e.message}');
-                        setState(() {
-                          _errorMessage = e.message;
-                        });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(
-                              'Đăng nhập thất bại: ${_errorMessage ??
-                                  "Vui lòng kiểm tra lại email và mật khẩu."}')),
+                          SnackBar(content: Text('Đăng nhập thất bại: ${e.message}')),
                         );
                       } catch (e) {
                         print('Lỗi không xác định: $e');
-                        setState(() {
-                          _errorMessage =
-                          "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
-                        });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng nhập thất bại: ${
-                              _errorMessage ?? "Đã có lỗi xảy ra."}')),
+                          SnackBar(content: Text('Đăng nhập thất bại: Đã có lỗi xảy ra.')),
                         );
                       }
                     }

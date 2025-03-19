@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
 import '../screens/home_screen.dart';
 import '../models/user.dart';
 
@@ -226,6 +227,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         if (newUserCredential.user != null) {
                           final newUser = newUserCredential.user!;
 
+                          // Gửi email xác thực
+                          await newUser.sendEmailVerification();
+
                           // Tạo đối tượng User
                           final user = UserModel(
                             uid: newUser.uid,
@@ -240,33 +244,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               .doc(newUser.uid)
                               .set(user.toMap());
 
-                          // Điều hướng đến HomeScreen và truyền UID
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    HomeScreen(uid: newUser.uid)),
+                          // Lưu trạng thái đăng nhập vào SharedPreferences (có thể không cần thiết ở đây)
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', false); // Đặt thành false sau khi đăng ký
+
+                          // Hiển thị thông báo cho người dùng
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Một email xác thực đã được gửi đến hộp thư của bạn. Vui lòng kiểm tra và xác minh tài khoản của bạn.')),
                           );
+
+                          // Điều hướng đến SignInScreen
+                          Navigator.pushReplacementNamed(context, '/signin');
                         }
                       } on FirebaseAuthException catch (e) {
                         print('Lỗi đăng ký: ${e.code} - ${e.message}');
-                        setState(() {
-                          _errorMessage = e.message;
-                        });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(
-                              'Đăng ký thất bại: ${_errorMessage ??
-                                  "Vui lòng thử lại."}')),
+                          SnackBar(content: Text('Đăng ký thất bại: ${e.message}')),
                         );
                       } catch (e) {
                         print('Lỗi không xác định: $e');
-                        setState(() {
-                          _errorMessage =
-                          "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
-                        });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng ký thất bại: ${
-                              _errorMessage ?? "Đã có lỗi xảy ra."}')),
+                          SnackBar(content: Text('Đăng ký thất bại: Đã có lỗi xảy ra.')),
                         );
                       }
                     }

@@ -20,7 +20,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  Category _selectedCategory = Category.luong; // Default Income Category
+  Category _selectedCategory = Category.luong;
 
   bool _isTitleFilled = false;
   @override

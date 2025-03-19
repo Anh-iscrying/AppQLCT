@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 
 class IncomeExpenseScreen extends StatefulWidget {
   final TransactionType transactionType;
+  final String uid;
   DateTime? selectedDate;
   TimeFilter selectedFilter;
   DateTimeRange? selectedRange;
@@ -21,6 +22,7 @@ class IncomeExpenseScreen extends StatefulWidget {
   IncomeExpenseScreen({
     Key? key,
     required this.transactionType,
+    required this.uid,
     this.selectedDate,
     required this.selectedFilter,
     this.selectedRange,

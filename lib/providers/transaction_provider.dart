@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../models/transaction.dart'; // Import MyTransaction
+import '../models/transaction.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TransactionProvider with ChangeNotifier {
@@ -12,7 +12,6 @@ class TransactionProvider with ChangeNotifier {
   List<MyTransaction> _expenseTransactions = [];
 
   List<MyTransaction> get incomeTransactions => [..._incomeTransactions];
-
   List<MyTransaction> get expenseTransactions => [..._expenseTransactions];
 
   void addTransaction(
@@ -130,5 +129,15 @@ class TransactionProvider with ChangeNotifier {
 
   List<MyTransaction> getTransactionsByType(TransactionType type) {
     return type == TransactionType.income ? _incomeTransactions : _expenseTransactions;
+  }
+
+  Future<void> loadExpenseTransactions(String uid) async {
+    _expenseTransactions = [];
+    notifyListeners();
+  }
+
+  Future<void> loadIncomeTransactions(String uid) async {
+    _incomeTransactions = [];
+    notifyListeners();
   }
 }
