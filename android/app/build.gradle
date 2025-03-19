@@ -1,39 +1,39 @@
 buildscript {
     repositories {
-        google() // Đảm bảo rằng bạn đã thêm kho lưu trữ Google
+        google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.15' // Phiên bản hiện tại
+        classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services' version '4.3.15' // Chỉ định phiên bản
+    id 'com.google.gms.google-services' version '4.3.15'
 }
 
 android {
     namespace = "com.example.demoqlct"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = '11'
     }
 
     defaultConfig {
         applicationId = "com.example.demoqlct"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -43,7 +43,10 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
 }
+
+
 
 flutter {
     source = "../.."

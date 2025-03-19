@@ -8,14 +8,41 @@ import 'income_expense_screen.dart';
 import '../widgets/summary_card.dart';
 import '../account_screen.dart';
 
-class HomeScreenMenu extends StatefulWidget {
-  const HomeScreenMenu({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  final String uid;
+  const HomeScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: Future.value(uid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          // Xử lý lỗi nếu có
+          return Text('Error: ${snapshot.error}');
+        } else {
+
+          return ChangeNotifierProvider(
+            create: (context) => TransactionProvider(uid: snapshot.data as String),
+            child: _HomeScreenContent(uid: snapshot.data as String),
+          );
+        }
+      },
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMixin {
+class _HomeScreenContent extends StatefulWidget {
+  final String uid;
+  const _HomeScreenContent({Key? key, required this.uid}) : super(key: key);
+
+  @override
+  State<_HomeScreenContent> createState() => _HomeScreenContentState();
+}
+
+class _HomeScreenContentState extends State<_HomeScreenContent> with TickerProviderStateMixin {
   DateTime? _selectedDate = DateTime.now();
   TimeFilter _selectedFilter = TimeFilter.day;
   DateTimeRange? _selectedRange;
@@ -67,7 +94,7 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
     double totalExpenseByFilter = 0;
 
     // Danh sách giao dịch đã lọc được
-    List<Transaction> combinedTransactions = getFilteredTransactions(
+    List<MyTransaction> combinedTransactions = getFilteredTransactions(
       transactionProvider,
       _selectedFilter,
       _selectedDate,
@@ -481,12 +508,12 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
     );
   }
 
-  List<Transaction> getFilteredTransactions(
+  List<MyTransaction> getFilteredTransactions(
       TransactionProvider transactionProvider,
       TimeFilter selectedFilter,
       DateTime? selectedDate,
       DateTimeRange? selectedRange,) {
-    List<Transaction> transactions = transactionProvider.transactions;
+    List<MyTransaction> transactions = transactionProvider.transactions;
 
     switch (selectedFilter) {
       case TimeFilter.all:
@@ -513,8 +540,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
     return transactions;
   }
 
-  List<Transaction> filterByDay(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByDay(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) =>
@@ -524,8 +551,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
         .toList();
   }
 
-  List<Transaction> filterByWeek(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByWeek(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     DateTime firstDayOfWeek = _getFirstDayOfWeek(selectedDate);
     DateTime lastDayOfWeek = _getLastDayOfWeek(selectedDate);
@@ -536,8 +563,8 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
         .toList();
   }
 
-  List<Transaction> filterByMonth(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByMonth(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) =>
@@ -546,16 +573,16 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
         .toList();
   }
 
-  List<Transaction> filterByYear(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByYear(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) => tx.date.year == selectedDate.year)
         .toList();
   }
 
-  List<Transaction> filterByRange(
-      List<Transaction> transactions, DateTimeRange? selectedRange) {
+  List<MyTransaction> filterByRange(
+      List<MyTransaction> transactions, DateTimeRange? selectedRange) {
     if (selectedRange == null) return [];
     return transactions
         .where((tx) =>
@@ -585,7 +612,7 @@ class _HomeScreenState extends State<HomeScreenMenu> with TickerProviderStateMix
 }
 
 extension on TransactionProvider {
-  List<Transaction> get transactions => expenseTransactions + incomeTransactions;
+  List<MyTransaction> get transactions => expenseTransactions + incomeTransactions;
 }
 
 enum TimeFilter {

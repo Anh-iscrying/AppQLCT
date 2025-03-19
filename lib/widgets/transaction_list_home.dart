@@ -4,7 +4,7 @@ import '../models/transaction.dart';
 import '../screens/transaction_detail_screen.dart';
 
 class TransactionListHome extends StatelessWidget {
-  final List<Transaction> transactions;
+  final List<MyTransaction> transactions;
 
   const TransactionListHome({
     Key? key,

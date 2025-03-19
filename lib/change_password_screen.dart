@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
+import '../providers/auth_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -28,27 +28,41 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Đổi mật khẩu'),
+      backgroundColor: const Color(0xFFF5F5DC),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(65.0),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Đổi mật khẩu'),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: <Widget>[
-              if (authProvider.currentUser != null)
-                Text(
-                  'Xin chào, ${authProvider.currentUser!.displayName ?? 'Người dùng'}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-
               const SizedBox(height: 20),
-
               // Mật khẩu cũ
               TextFormField(
                 controller: _oldPasswordController,
-                decoration: const InputDecoration(labelText: 'Mật khẩu cũ'),
+                decoration: const InputDecoration(labelText: 'Mật khẩu cũ',
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -61,7 +75,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               // Mật khẩu mới
               TextFormField(
                 controller: _newPasswordController,
-                decoration: const InputDecoration(labelText: 'Mật khẩu mới'),
+                decoration: const InputDecoration(labelText: 'Mật khẩu mới',
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -77,7 +95,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               // Xác nhận mật khẩu mới
               TextFormField(
                 controller: _confirmPasswordController,
-                decoration: const InputDecoration(labelText: 'Xác nhận mật khẩu mới'),
+                decoration: const InputDecoration(labelText: 'Xác nhận mật khẩu mới',
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.amber, width: 2.0),
+                  ),
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -109,7 +131,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Đổi Mật Khẩu', style: TextStyle(fontSize: 18, color: Colors.white)),
+                child: const Text('Đổi Mật Khẩu', style: TextStyle(fontSize: 18, color: Colors.black)),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   backgroundColor: Colors.amber,

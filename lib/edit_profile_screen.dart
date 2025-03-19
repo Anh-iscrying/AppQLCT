@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-
-import 'providers/auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -24,7 +23,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Lấy thông tin hiện tại từ AuthProvider khi mở màn hình
     Future.microtask(() {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
       setState(() {
         _name = FirebaseAuth.instance.currentUser?.displayName ?? '';
         _email = FirebaseAuth.instance.currentUser?.email ?? '';
@@ -53,7 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5DC),
-      appBar:PreferredSize(
+      appBar: PreferredSize(
         preferredSize: const Size.fromHeight(65.0),
         child: Container(
           decoration: const BoxDecoration(
@@ -80,7 +79,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Tiêu đề
                 const Text(
                   "Cập nhật thông tin cá nhân",
                   style: TextStyle(
@@ -91,8 +89,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24.0),
-
-                // Họ Tên
                 TextFormField(
                   initialValue: _name,
                   decoration: InputDecoration(
@@ -103,7 +99,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -116,25 +113,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-
-                // Email (không cho phép sửa)
                 TextFormField(
                   initialValue: _email,
-                  enabled: false, // Disable editing
+                  enabled: false,
                   decoration: InputDecoration(
                     hintText: 'Email',
                     filled: true,
-                    fillColor: Colors.grey[200], // Lighter background
+                    fillColor: Colors.grey[200],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Ngày sinh
                 GestureDetector(
                   onTap: () => _pickDate(context),
                   child: AbsorbPointer(
@@ -147,7 +141,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(24.0),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 24.0),
                       ),
                       controller: TextEditingController(
                         text: DateFormat('dd/MM/yyyy').format(_selectedDate),
@@ -156,16 +151,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-
-                // Nút Lưu Thông Tin
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       // Xử lý lưu thông tin ở đây
-                      print('Tên: $_name, Email: $_email, Ngày sinh: $_selectedDate');
-                      final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
-                      await authProvider.updateProfile(name: _name, email: _email, dateOfBirth: _selectedDate);
+                      print(
+                          'Tên: $_name, Email: $_email, Ngày sinh: $_selectedDate');
+                      final authProvider =
+                      Provider.of<MyAuthProvider>(context, listen: false);
+                      await authProvider.updateProfile(
+                          name: _name, email: _email, dateOfBirth: _selectedDate);
                       // **TODO:** Gọi hàm lưu thông tin từ backend (ví dụ: Firebase Authentication)
                       // Sau khi lưu thông tin thành công:
                       showDialog(
@@ -173,13 +169,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text("Cập nhật thành công"),
-                            content: const Text("Thông tin cá nhân của bạn đã được cập nhật."),
+                            content: const Text(
+                                "Thông tin cá nhân của bạn đã được cập nhật."),
                             actions: [
                               TextButton(
                                 child: const Text("OK"),
                                 onPressed: () {
                                   Navigator.of(context).pop();
-                                  Navigator.pop(context); // Quay lại màn hình Account
+                                  Navigator.pop(
+                                      context); // Quay lại màn hình Account
                                 },
                               ),
                             ],
@@ -188,7 +186,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       );
                     }
                   },
-                  child: const Text('Lưu Thông Tin', style: TextStyle(fontSize: 18, color: Colors.black)),
+                  child: const Text('Lưu Thông Tin',
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Colors.amber,

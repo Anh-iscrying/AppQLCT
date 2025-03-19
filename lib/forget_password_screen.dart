@@ -1,3 +1,4 @@
+// forget_password_screen.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Tiêu đề
                 const Text(
                   "Nhập email của bạn",
                   style: TextStyle(
@@ -53,8 +53,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32.0),
-
-                // Trường Nhập Email
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -64,7 +62,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -81,21 +80,21 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   },
                 ),
                 const SizedBox(height: 24.0),
-
-                // Nút Gửi Mã Xác Nhận
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       try {
-                        await FirebaseAuth.instance.sendPasswordResetEmail(email: _email.trim());
+                        await FirebaseAuth.instance.sendPasswordResetEmail(
+                            email: _email.trim());
                         // Gửi email thành công
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text("Mã xác nhận đã được gửi"),
-                              content: const Text("Vui lòng kiểm tra email của bạn để lấy mã xác nhận."),
+                              content: const Text(
+                                  "Vui lòng kiểm tra email của bạn để lấy mã xác nhận."),
                               actions: [
                                 TextButton(
                                   child: const Text("OK"),
@@ -113,20 +112,24 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           _errorMessage = e.message;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Gửi email thất bại: ${_errorMessage ?? "Vui lòng thử lại."}')),
+                          SnackBar(content: Text('Gửi email thất bại: ${
+                              _errorMessage ?? "Vui lòng thử lại."}')),
                         );
                       } catch (e) {
                         print('Lỗi không xác định: $e');
                         setState(() {
-                          _errorMessage = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
+                          _errorMessage =
+                          "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Gửi email thất bại: ${_errorMessage ?? "Đã có lỗi xảy ra."}')),
+                          SnackBar(content: Text('Gửi email thất bại: ${
+                              _errorMessage ?? "Đã có lỗi xảy ra."}')),
                         );
                       }
                     }
                   },
-                  child: const Text('Gửi Mã Xác Nhận', style: TextStyle(fontSize: 18, color: Colors.black)),
+                  child: const Text('Gửi Mã Xác Nhận',
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Colors.amber,

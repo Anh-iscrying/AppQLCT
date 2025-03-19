@@ -12,6 +12,7 @@ class SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double balance = income - expense;
+    double surplus = incomeByFilter - expenseByFilter;
 
     return Card(
       elevation: 5,
@@ -29,6 +30,17 @@ class SummaryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 color: balance >= 0 ? Colors.green : Colors.red,
+              ),
+            ),
+            Text(
+              'Số dư:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '${NumberFormat('#,##0').format(surplus)} VNĐ',
+              style: TextStyle(
+                fontSize: 16,
+                color: surplus >= 0 ? Colors.green : Colors.red,
               ),
             ),
             const SizedBox(height: 10),

@@ -4,7 +4,7 @@ import '../models/transaction.dart';
 import 'package:intl/intl.dart';
 
 class TransactionDetailDialog extends StatelessWidget {
-  final Transaction transaction;
+  final MyTransaction transaction;
 
   const TransactionDetailDialog({Key? key, required this.transaction}) : super(key: key);
 

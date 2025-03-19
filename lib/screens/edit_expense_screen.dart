@@ -5,7 +5,7 @@ import '../models/transaction.dart';
 import '../providers/transaction_provider.dart';
 
 class EditExpenseScreen extends StatefulWidget {
-  final Transaction transaction;
+  final MyTransaction transaction;
 
   const EditExpenseScreen({Key? key, required this.transaction})
       : super(key: key);
@@ -20,7 +20,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  Category _selectedCategory = Category.anuong; // Default Expense Category
+  Category _selectedCategory = Category.anuong;
 
   bool _isTitleFilled = false;
   @override
@@ -65,7 +65,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       final transactionProvider =
       Provider.of<TransactionProvider>(context, listen: false);
 
-      final updatedTx = Transaction(
+      final updatedTx = MyTransaction(
         id: widget.transaction.id,
         title: title,
         amount: amount,

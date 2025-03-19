@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'home_screen.dart'; // Import HomeScreen
+import '../providers/auth_provider.dart';
+import 'signin_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<MyAuthProvider>(context, listen: false);
+    final user = FirebaseAuth.instance.currentUser;
 
     // Định nghĩa ThemeData cho chế độ sáng và tối
     final ThemeData theme = _isDarkMode
@@ -45,7 +47,7 @@ class _AccountScreenState extends State<AccountScreen> {
     )
         : ThemeData.light().copyWith(
       scaffoldBackgroundColor: Color(0xFFF5F5F5),
-      appBarTheme: AppBarTheme(backgroundColor: Colors.blue),
+      appBarTheme: AppBarTheme(backgroundColor: Colors.amber),
       cardColor: Colors.white,
       textTheme: TextTheme(
         bodyLarge: TextStyle(color: Colors.black),
@@ -53,7 +55,7 @@ class _AccountScreenState extends State<AccountScreen> {
         titleLarge: TextStyle(color: Colors.black),
         titleMedium: TextStyle(color: Colors.black),
       ),
-      iconTheme: IconThemeData(color: Colors.blue),
+      iconTheme: IconThemeData(color: Colors.amber),
       switchTheme: SwitchThemeData(
         thumbColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
@@ -63,7 +65,7 @@ class _AccountScreenState extends State<AccountScreen> {
         }),
         trackColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
           if (states.contains(MaterialState.selected)) {
-            return Colors.blue[200];
+            return Colors.amber;
           }
           return Colors.grey[400];
         }),
@@ -72,9 +74,24 @@ class _AccountScreenState extends State<AccountScreen> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor,
-        title: const Text('Quản lý chi tiêu'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(65.0),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.amber,
+                Color(0xFFF5F5DC),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AppBar(
+            title: const Text('Quản lý chi tiêu'),
+            backgroundColor: Colors.transparent,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -98,7 +115,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     children: [
                       ListTile(
                         title: Text(
-                          'Mai Phương Anh',
+                          user?.displayName ?? 'Không có tên', // Hiển thị tên người dùng
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -128,7 +145,6 @@ class _AccountScreenState extends State<AccountScreen> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 24),
-
                       _buildOption(context, Icons.person, 'Tài Khoản', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
                       _buildOption(context, Icons.lock, 'Đổi Mật Khẩu', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
                       _buildOption(context, Icons.language, 'Ngôn Ngữ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
@@ -136,14 +152,13 @@ class _AccountScreenState extends State<AccountScreen> {
                       _buildOption(context, Icons.history, 'Lịch Sử', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
                       _buildOption(context, Icons.save_alt, 'Xuất CSV', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
                       _buildOption(context, Icons.attach_money, 'Tỷ Giá Tiền Tệ', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
-
                       SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () {
                           authProvider.signOut(); // ĐÃ SỬA LỖI
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                            MaterialPageRoute(builder: (context) => SignInScreen()),
                           );
                         },
                         child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),

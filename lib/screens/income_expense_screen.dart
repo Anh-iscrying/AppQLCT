@@ -17,6 +17,7 @@ class IncomeExpenseScreen extends StatefulWidget {
   TimeFilter selectedFilter;
   DateTimeRange? selectedRange;
 
+
   IncomeExpenseScreen({
     Key? key,
     required this.transactionType,
@@ -96,7 +97,7 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
   Widget build(BuildContext context) {
     final transactionProvider = Provider.of<TransactionProvider>(context);
 
-    List<Transaction> transactions = [];
+    List<MyTransaction> transactions = [];
     transactions = getFilteredTransactions(
       transactionProvider,
       _selectedFilter,
@@ -520,7 +521,7 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
     );
   }
 
-  List<Transaction> getFilteredTransactions(
+  List<MyTransaction> getFilteredTransactions(
       TransactionProvider transactionProvider,
       TimeFilter selectedFilter,
       DateTime? selectedDate,
@@ -528,7 +529,7 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
       TransactionType transactionType,
       String searchTerm,
       Category? selectedCategory,) {
-    List<Transaction> transactions =
+    List<MyTransaction> transactions =
     transactionProvider.getTransactionsByType(transactionType);
 
     switch (selectedFilter) {
@@ -564,8 +565,8 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
     return transactions;
   }
 
-  List<Transaction> filterByDay(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByDay(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) =>
@@ -575,8 +576,8 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
         .toList();
   }
 
-  List<Transaction> filterByWeek(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByWeek(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     DateTime firstDayOfWeek = _getFirstDayOfWeek(selectedDate);
     DateTime lastDayOfWeek = _getLastDayOfWeek(selectedDate);
@@ -587,8 +588,8 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
         .toList();
   }
 
-  List<Transaction> filterByMonth(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByMonth(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) =>
@@ -597,16 +598,16 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
         .toList();
   }
 
-  List<Transaction> filterByYear(
-      List<Transaction> transactions, DateTime? selectedDate) {
+  List<MyTransaction> filterByYear(
+      List<MyTransaction> transactions, DateTime? selectedDate) {
     if (selectedDate == null) return [];
     return transactions
         .where((tx) => tx.date.year == selectedDate.year)
         .toList();
   }
 
-  List<Transaction> filterByRange(
-      List<Transaction> transactions, DateTimeRange? selectedRange) {
+  List<MyTransaction> filterByRange(
+      List<MyTransaction> transactions, DateTimeRange? selectedRange) {
     if (selectedRange == null) return [];
     return transactions
         .where((tx) =>
@@ -614,16 +615,16 @@ class _IncomeExpenseScreenState extends State<IncomeExpenseScreen>
         tx.date.isBefore(selectedRange.end.add(const Duration(days: 1))))
         .toList();
   }
-  List<Transaction> filterBySearchTerm(
-      List<Transaction> transactions, String searchTerm) {
+  List<MyTransaction> filterBySearchTerm(
+      List<MyTransaction> transactions, String searchTerm) {
     searchTerm = searchTerm.toLowerCase();
     return transactions
         .where((tx) => tx.title.toLowerCase().contains(searchTerm))
         .toList();
   }
 
-  List<Transaction> filterByCategory(
-      List<Transaction> transactions, Category selectedCategory) {
+  List<MyTransaction> filterByCategory(
+      List<MyTransaction> transactions, Category selectedCategory) {
     return transactions.where((tx) => tx.category == selectedCategory).toList();
   }
 

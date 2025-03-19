@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
-import 'main.dart';
 import '../providers/locale_provider.dart';
 
 class ChangeLanguageScreen extends StatefulWidget {
@@ -18,7 +17,7 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5DC),
-      appBar:PreferredSize(
+      appBar: PreferredSize(
         preferredSize: const Size.fromHeight(65.0),
         child: Container(
           decoration: const BoxDecoration(

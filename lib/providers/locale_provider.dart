@@ -1,3 +1,4 @@
+// providers/locale_provider.dart
 import 'package:flutter/material.dart';
 
 class LocaleProvider extends ChangeNotifier {

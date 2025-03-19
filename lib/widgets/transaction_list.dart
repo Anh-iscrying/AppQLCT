@@ -5,9 +5,9 @@ import '../screens/transaction_detail_screen.dart'; // Import trang chi tiết
 import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
-  final List<Transaction> transactions;
+  final List<MyTransaction> transactions;
   final Function(String id, TransactionType type) onDelete;
-  final Function(Transaction transaction) onEdit;
+  final Function(MyTransaction transaction) onEdit;
 
   const TransactionList({
     Key? key,

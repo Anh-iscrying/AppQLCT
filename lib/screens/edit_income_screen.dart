@@ -5,7 +5,7 @@ import '../models/transaction.dart';
 import '../providers/transaction_provider.dart';
 
 class EditIncomeScreen extends StatefulWidget {
-  final Transaction transaction;
+  final MyTransaction transaction;
 
   const EditIncomeScreen({Key? key, required this.transaction})
       : super(key: key);
@@ -65,7 +65,7 @@ class _EditIncomeScreenState extends State<EditIncomeScreen> {
       final transactionProvider =
       Provider.of<TransactionProvider>(context, listen: false);
 
-      final updatedTx = Transaction(
+      final updatedTx = MyTransaction(
         id: widget.transaction.id,
         title: title,
         amount: amount,

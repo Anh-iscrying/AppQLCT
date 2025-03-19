@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'main.dart'; // Import để có thể điều hướng đến MainPage
+import '../screens/home_screen.dart'; // Đảm bảo đường dẫn chính xác
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -13,14 +11,14 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
-  bool _obscurePassword = true; // Thêm biến để kiểm soát hiển thị mật khẩu
+  bool _obscurePassword = true;
   String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5DC),
-      appBar: null, // Ẩn AppBar cho màn hình đăng nhập
+      appBar: null,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -48,8 +46,6 @@ class _SignInScreenState extends State<SignInScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32.0),
-
-                // Nhập Email
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -59,7 +55,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -76,8 +73,6 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-
-                // Nhập Mật Khẩu có ẩn/hiện
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Mật Khẩu',
@@ -87,10 +82,12 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword ? Icons.visibility_off : Icons
+                            .visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -111,45 +108,54 @@ class _SignInScreenState extends State<SignInScreen> {
                     _password = value!;
                   },
                 ),
-
                 const SizedBox(height: 32.0),
-
-                // Nút Đăng Nhập
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       try {
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        final userCredential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
                           email: _email.trim(),
                           password: _password.trim(),
                         );
 
-                        // Đăng nhập thành công
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => MainPage()),
-                        );
+                        if (userCredential.user != null) {
+                          // Đăng nhập thành công
+                          // Điều hướng đến HomeScreen và truyền UID
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(uid: userCredential.user!.uid),
+                            ),
+                          );
+                        }
                       } on FirebaseAuthException catch (e) {
                         print('Lỗi đăng nhập: ${e.code} - ${e.message}');
                         setState(() {
                           _errorMessage = e.message;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng nhập thất bại: ${_errorMessage ?? "Vui lòng kiểm tra lại email và mật khẩu."}')),
+                          SnackBar(content: Text(
+                              'Đăng nhập thất bại: ${_errorMessage ??
+                                  "Vui lòng kiểm tra lại email và mật khẩu."}')),
                         );
                       } catch (e) {
                         print('Lỗi không xác định: $e');
                         setState(() {
-                          _errorMessage = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
+                          _errorMessage =
+                          "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng nhập thất bại: ${_errorMessage ?? "Đã có lỗi xảy ra."}')),
+                          SnackBar(content: Text('Đăng nhập thất bại: ${
+                              _errorMessage ?? "Đã có lỗi xảy ra."}')),
                         );
                       }
                     }
                   },
-                  child: const Text('Đăng Nhập', style: TextStyle(fontSize: 18, color: Colors.black)),
+                  child: const Text('Đăng Nhập',
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Colors.amber,
@@ -159,10 +165,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16.0),
-
-                // Đăng ký ngay
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -177,10 +180,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 8.0),
-
-                // Quên mật khẩu
                 Center(
                   child: GestureDetector(
                     onTap: () {

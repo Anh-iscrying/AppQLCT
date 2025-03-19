@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 class Chart extends StatelessWidget {
   final TransactionType transactionType;
-  final List<Transaction> transactions;
+  final List<MyTransaction> transactions;
 
   const Chart({Key? key, required this.transactionType, required this.transactions}) : super(key: key);
 

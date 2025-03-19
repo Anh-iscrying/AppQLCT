@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Transaction {
+class MyTransaction {
   String id;
   String title;
   double amount;
@@ -9,7 +9,7 @@ class Transaction {
   Category category;
   String note;
 
-  Transaction({
+  MyTransaction({
     required this.id,
     required this.title,
     required this.amount,

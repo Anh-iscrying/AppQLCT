@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../models/transaction.dart';
+import '../models/transaction.dart'; // Import MyTransaction
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TransactionProvider with ChangeNotifier {
-  List<Transaction> _incomeTransactions = [];
-  List<Transaction> _expenseTransactions = [];
+  String? uid;
 
-  List<Transaction> get incomeTransactions => [..._incomeTransactions];
+  TransactionProvider({this.uid});
 
-  List<Transaction> get expenseTransactions => [..._expenseTransactions];
+  List<MyTransaction> _incomeTransactions = [];
+  List<MyTransaction> _expenseTransactions = [];
 
-  // Hàm thêm giao dịch (tự động phân loại)
+  List<MyTransaction> get incomeTransactions => [..._incomeTransactions];
+
+  List<MyTransaction> get expenseTransactions => [..._expenseTransactions];
+
   void addTransaction(
       String title,
       double amount,
@@ -18,8 +22,8 @@ class TransactionProvider with ChangeNotifier {
       TransactionType type,
       Category category,
       String note,
-      ) {
-    final newTx = Transaction(
+      ) async {
+    final newTx = MyTransaction(
       id: const Uuid().v4(),
       title: title,
       amount: amount,
@@ -35,17 +39,50 @@ class TransactionProvider with ChangeNotifier {
       _expenseTransactions.add(newTx);
     }
 
+    // Lưu vào Firestore
+    if (uid != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('transactions')
+          .doc(newTx.id)
+          .set({
+        'title': newTx.title,
+        'amount': newTx.amount,
+        'date': newTx.date,
+        'type': newTx.type.toString(),
+        'category': newTx.category.toString(),
+        'note': newTx.note,
+      });
+    }
     notifyListeners();
   }
 
   // Hàm sửa giao dịch
-  void updateTransaction(Transaction updatedTx) {
+  void updateTransaction(MyTransaction updatedTx) async {
     final txIndex = _getTransactionIndex(updatedTx.id, updatedTx.type);
     if (txIndex >= 0) {
       if (updatedTx.type == TransactionType.income) {
         _incomeTransactions[txIndex] = updatedTx;
       } else {
         _expenseTransactions[txIndex] = updatedTx;
+      }
+
+      // Cập nhật trên Firestore
+      if (uid != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection('transactions')
+            .doc(updatedTx.id)
+            .update({
+          'title': updatedTx.title,
+          'amount': updatedTx.amount,
+          'date': updatedTx.date,
+          'type': updatedTx.type.toString(),
+          'category': updatedTx.category.toString(),
+          'note': updatedTx.note,
+        });
       }
       notifyListeners();
     }
@@ -61,11 +98,21 @@ class TransactionProvider with ChangeNotifier {
   }
 
   // Hàm xóa giao dịch
-  void deleteTransaction(String id, TransactionType type) {
+  void deleteTransaction(String id, TransactionType type) async {
     if (type == TransactionType.income) {
       _incomeTransactions.removeWhere((tx) => tx.id == id);
     } else {
       _expenseTransactions.removeWhere((tx) => tx.id == id);
+    }
+
+    // Xóa trên Firestore
+    if (uid != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('transactions')
+          .doc(id)
+          .delete();
     }
     notifyListeners();
   }
@@ -81,7 +128,7 @@ class TransactionProvider with ChangeNotifier {
   }
 
 
-  List<Transaction> getTransactionsByType(TransactionType type) {
+  List<MyTransaction> getTransactionsByType(TransactionType type) {
     return type == TransactionType.income ? _incomeTransactions : _expenseTransactions;
   }
 }

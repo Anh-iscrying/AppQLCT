@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../screens/home_screen.dart';
+import '../models/user.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -34,7 +34,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Tiêu đề
                 const Text(
                   "Chào người dùng mới!",
                   style: TextStyle(
@@ -54,8 +53,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32.0),
-
-                // Nhập Họ Tên
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Họ Tên',
@@ -65,7 +62,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -78,8 +76,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-
-                // Nhập Email
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Email',
@@ -89,7 +85,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -106,8 +103,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-
-                // Ngày Sinh
                 GestureDetector(
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
@@ -127,7 +122,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(24.0),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                     child: Row(
                       children: [
                         Expanded(
@@ -142,8 +138,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-
-                // Nhập Mật Khẩu
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Mật Khẩu',
@@ -153,10 +147,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible ? Icons.visibility : Icons
+                            .visibility_off,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -179,8 +175,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-
-                // Xác nhận Mật Khẩu
                 TextFormField(
                   decoration: InputDecoration(
                     hintText: 'Xác nhận Mật Khẩu',
@@ -190,10 +184,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(24.0),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 24.0),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons
+                            .visibility_off,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -216,24 +212,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 const SizedBox(height: 32.0),
-
-                // Nút Đăng Ký
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       try {
-                        final newUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        final newUserCredential = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
                           email: _email.trim(),
                           password: _password.trim(),
                         );
 
-                        if (newUser.user != null) {
-                          // Đăng ký thành công
-                          // **TODO:** Lưu thêm thông tin người dùng (name, birthDate) vào Firestore
+                        if (newUserCredential.user != null) {
+                          final newUser = newUserCredential.user!;
+
+                          // Tạo đối tượng User
+                          final user = UserModel(
+                            uid: newUser.uid,
+                            name: _name,
+                            email: _email,
+                            birthDate: _selectedDate,
+                          );
+
+                          // Lưu thông tin người dùng vào Firestore
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(newUser.uid)
+                              .set(user.toMap());
+
+                          // Điều hướng đến HomeScreen và truyền UID
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => MainPage()),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    HomeScreen(uid: newUser.uid)),
                           );
                         }
                       } on FirebaseAuthException catch (e) {
@@ -242,20 +254,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           _errorMessage = e.message;
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng ký thất bại: ${_errorMessage ?? "Vui lòng thử lại."}')),
+                          SnackBar(content: Text(
+                              'Đăng ký thất bại: ${_errorMessage ??
+                                  "Vui lòng thử lại."}')),
                         );
                       } catch (e) {
                         print('Lỗi không xác định: $e');
                         setState(() {
-                          _errorMessage = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
+                          _errorMessage =
+                          "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đăng ký thất bại: ${_errorMessage ?? "Đã có lỗi xảy ra."}')),
+                          SnackBar(content: Text('Đăng ký thất bại: ${
+                              _errorMessage ?? "Đã có lỗi xảy ra."}')),
                         );
                       }
                     }
                   },
-                  child: const Text('Đăng Ký', style: TextStyle(fontSize: 18, color: Colors.black)),
+                  child: const Text('Đăng Ký',
+                      style: TextStyle(fontSize: 18, color: Colors.black)),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     backgroundColor: Colors.amber,
@@ -265,10 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16.0),
-
-                // Đã có tài khoản? Đăng nhập
                 Center(
                   child: GestureDetector(
                     onTap: () {
