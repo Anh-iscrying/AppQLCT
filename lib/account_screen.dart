@@ -119,20 +119,14 @@ class _AccountScreenState extends State<AccountScreen> {
                           children: [
                             ListTile(
                               title: Text(
-                                user?.displayName ?? 'Không có tên', // Hiển thị tên người dùng from authProvider
+                                user?.displayName ?? 'Không có tên',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     color: theme.textTheme.titleMedium?.color),
                                 textAlign: TextAlign.center,
                               ),
-                              subtitle: Text(
-                                'Tiền hàng tháng',
-                                style: TextStyle(
-                                    color: theme.textTheme.bodyMedium?.color,
-                                    fontSize: 14),
-                                textAlign: TextAlign.center,
-                              ),
+
                             ),
                             CircleAvatar(
                               radius: 50,
@@ -140,14 +134,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   'https://i.pinimg.com/originals/0c/3b/3a/0c3b3ab9cf9c9a14f6c9dfafac358f33.jpg'),
                             ),
                             SizedBox(height: 16),
-                            Text(
-                              '30.000.000 VND',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: theme.textTheme.bodyLarge?.color),
-                              textAlign: TextAlign.center,
-                            ),
+
                             SizedBox(height: 24),
                             _buildOption(context, Icons.person, 'Tài Khoản', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
                             _buildOption(context, Icons.lock, 'Đổi Mật Khẩu', theme: theme, isDarkMode: _isDarkMode, toggleDarkMode: _toggleDarkMode),
@@ -159,7 +146,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             SizedBox(height: 24),
                             ElevatedButton(
                               onPressed: () {
-                                authProvider.signOut(); // ĐÃ SỬA LỖI
+                                authProvider.signOut();
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) => SignInScreen()),

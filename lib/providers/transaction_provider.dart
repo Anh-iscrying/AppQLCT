@@ -1,3 +1,4 @@
+// transaction_provider.dart
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/transaction.dart';
@@ -14,7 +15,7 @@ class TransactionProvider with ChangeNotifier {
   List<MyTransaction> get incomeTransactions => [..._incomeTransactions];
   List<MyTransaction> get expenseTransactions => [..._expenseTransactions];
 
-  void addTransaction(
+  Future<void> addTransaction(
       String title,
       double amount,
       DateTime date,
@@ -22,6 +23,11 @@ class TransactionProvider with ChangeNotifier {
       Category category,
       String note,
       ) async {
+    if (uid == null) {
+      print("Lỗi: UID người dùng chưa được thiết lập.");
+      return; // Hoặc throw một exception
+    }
+
     final newTx = MyTransaction(
       id: const Uuid().v4(),
       title: title,
@@ -39,26 +45,27 @@ class TransactionProvider with ChangeNotifier {
     }
 
     // Lưu vào Firestore
-    if (uid != null) {
+    try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .collection('transactions')
           .doc(newTx.id)
-          .set({
-        'title': newTx.title,
-        'amount': newTx.amount,
-        'date': newTx.date,
-        'type': newTx.type.toString(),
-        'category': newTx.category.toString(),
-        'note': newTx.note,
-      });
+          .set(newTx.toMap());
+      notifyListeners();
+    } catch (error) {
+      print("Lỗi khi thêm giao dịch vào Firestore: $error");
+      // Xử lý lỗi (ví dụ: hiển thị thông báo cho người dùng)
     }
-    notifyListeners();
   }
 
   // Hàm sửa giao dịch
-  void updateTransaction(MyTransaction updatedTx) async {
+  Future<void> updateTransaction(MyTransaction updatedTx) async {
+    if (uid == null) {
+      print("Lỗi: UID người dùng chưa được thiết lập.");
+      return;
+    }
+
     final txIndex = _getTransactionIndex(updatedTx.id, updatedTx.type);
     if (txIndex >= 0) {
       if (updatedTx.type == TransactionType.income) {
@@ -68,22 +75,18 @@ class TransactionProvider with ChangeNotifier {
       }
 
       // Cập nhật trên Firestore
-      if (uid != null) {
+      try {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(uid)
             .collection('transactions')
             .doc(updatedTx.id)
-            .update({
-          'title': updatedTx.title,
-          'amount': updatedTx.amount,
-          'date': updatedTx.date,
-          'type': updatedTx.type.toString(),
-          'category': updatedTx.category.toString(),
-          'note': updatedTx.note,
-        });
+            .update(updatedTx.toMap());
+        notifyListeners();
+      } catch (error) {
+        print("Lỗi khi cập nhật giao dịch trên Firestore: $error");
+        // Xử lý lỗi
       }
-      notifyListeners();
     }
   }
 
@@ -97,23 +100,29 @@ class TransactionProvider with ChangeNotifier {
   }
 
   // Hàm xóa giao dịch
-  void deleteTransaction(String id, TransactionType type) async {
-    if (type == TransactionType.income) {
-      _incomeTransactions.removeWhere((tx) => tx.id == id);
-    } else {
-      _expenseTransactions.removeWhere((tx) => tx.id == id);
+  Future<void> deleteTransaction(String id, TransactionType type) async {
+    if (uid == null) {
+      print("Lỗi: UID người dùng chưa được thiết lập.");
+      return;
     }
+    try {
+      if (type == TransactionType.income) {
+        _incomeTransactions.removeWhere((tx) => tx.id == id);
+      } else {
+        _expenseTransactions.removeWhere((tx) => tx.id == id);
+      }
 
-    // Xóa trên Firestore
-    if (uid != null) {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .collection('transactions')
           .doc(id)
           .delete();
+      notifyListeners();
+    } catch (error) {
+      print("Lỗi khi xóa giao dịch trên Firestore: $error");
+      // Xử lý lỗi
     }
-    notifyListeners();
   }
 
   // Tính tổng thu nhập
@@ -126,18 +135,51 @@ class TransactionProvider with ChangeNotifier {
     return _expenseTransactions.fold(0.0, (sum, tx) => sum + tx.amount);
   }
 
-
   List<MyTransaction> getTransactionsByType(TransactionType type) {
     return type == TransactionType.income ? _incomeTransactions : _expenseTransactions;
   }
 
   Future<void> loadExpenseTransactions(String uid) async {
-    _expenseTransactions = [];
-    notifyListeners();
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('transactions')
+          .where('type', isEqualTo: TransactionType.expense.toString())
+          .get();
+
+      _expenseTransactions = snapshot.docs.map((doc) => MyTransaction.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading expense transactions: $e');
+    }
   }
 
   Future<void> loadIncomeTransactions(String uid) async {
-    _incomeTransactions = [];
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('transactions')
+          .where('type', isEqualTo: TransactionType.income.toString())
+          .get();
+
+      _incomeTransactions = snapshot.docs.map((doc) => MyTransaction.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading income transactions: $e');
+    }
+  }
+
+  void clearTransactions() {
+    _expenseTransactions.clear();
+    _incomeTransactions.clear();
+    notifyListeners();
+  }
+
+  //Clear UID
+  void clearUID(){
+    uid = null;
     notifyListeners();
   }
 }

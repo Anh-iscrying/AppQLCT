@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else if (_selectedFilter == TimeFilter.range) {
       return _buildRangeFilterOptions();
     } else {
-      return Container(); // Không hiển thị gì nếu không có bộ lọc nào được chọn
+      return Container();
     }
   }
 

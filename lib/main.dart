@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'signup_screen.dart';
 import 'signin_screen.dart';
-import 'account_screen.dart';
 import 'providers/auth_provider.dart';
 import 'forget_password_screen.dart';
 import 'change_password_screen.dart';
@@ -71,9 +70,10 @@ class _AuthCheckState extends State<AuthCheck> {
     _checkLoginStatus();
   }
 
+
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    _isLoggedIn = prefs.getBool('isLoggedIn') ?? false; // Mặc định là false nếu không tìm thấy
+    _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     setState(() {
       _isLoading = false;
     });
@@ -85,17 +85,29 @@ class _AuthCheckState extends State<AuthCheck> {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (_isLoggedIn && FirebaseAuth.instance.currentUser != null) {
-      return HomeScreen(uid: FirebaseAuth.instance.currentUser!.uid);
-    } else {
-      return SignInScreen();
-    }
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // Tải lại dữ liệu khi người dùng đã đăng nhập
+          final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+          transactionProvider.uid = snapshot.data!.uid;
+          transactionProvider.loadExpenseTransactions(snapshot.data!.uid);
+          transactionProvider.loadIncomeTransactions(snapshot.data!.uid);
+          return HomeScreen(uid: snapshot.data!.uid);
+        } else {
+          return SignInScreen();
+        }
+      },
+    );
   }
 }
 
-// Ví dụ hàm đăng xuất (đặt ở nơi thích hợp trong ứng dụng của bạn):
-Future<void> signOut() async {
+Future<void> signOut(BuildContext context) async {
   await FirebaseAuth.instance.signOut();
   final prefs = await SharedPreferences.getInstance();
   await prefs.setBool('isLoggedIn', false);
+
+  Provider.of<TransactionProvider>(context, listen: false).clearTransactions();
+  Provider.of<TransactionProvider>(context, listen: false).clearUID();
 }

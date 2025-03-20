@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class MyTransaction {
   String id;
   String title;
@@ -24,7 +22,7 @@ class MyTransaction {
       'id': id,
       'title': title,
       'amount': amount,
-      'date': date.toIso8601String(),
+      'date': date.toIso8601String(), // Lưu dưới dạng chuỗi ISO
       'type': type.toString(),
       'category': category.toString(),
       'note': note,
@@ -35,8 +33,8 @@ class MyTransaction {
     return MyTransaction(
       id: map['id'],
       title: map['title'],
-      amount: map['amount'],
-      date: DateTime.parse(map['date']),
+      amount: (map['amount'] as num).toDouble(), // Ép kiểu double
+      date: DateTime.parse(map['date']), // Chuyển đổi chuỗi ISO về DateTime
       type: TransactionType.values.firstWhere((e) => e.toString() == map['type']),
       category: Category.values.firstWhere((e) => e.toString() == map['category']),
       note: map['note'],

@@ -1,19 +1,18 @@
-// providers/locale_provider.dart
 import 'package:flutter/material.dart';
 
 class LocaleProvider extends ChangeNotifier {
-  Locale _locale = const Locale('vi'); // Mặc định là tiếng Việt
+  Locale _locale = const Locale('vi');
 
   Locale get locale => _locale;
 
   void setLocale(Locale locale) {
-    if (!L10n.all.contains(locale)) return; // Kiểm tra nếu locale hợp lệ
+    if (!L10n.all.contains(locale)) return;
     _locale = locale;
-    notifyListeners(); // Thông báo cho widget rebuild
+    notifyListeners();
   }
 
   void clearLocale() {
-    _locale = const Locale('vi'); // Hoặc Locale mặc định
+    _locale = const Locale('vi');
     notifyListeners();
   }
 }

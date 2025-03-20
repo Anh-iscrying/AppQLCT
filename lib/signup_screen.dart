@@ -2,8 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
-import '../screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -16,11 +15,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _name = '';
   String _email = '';
   String _password = '';
-  String _confirmPassword = '';
   DateTime _selectedDate = DateTime.now();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +168,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (value.length < 6) {
                       return 'Mật khẩu phải có ít nhất 6 ký tự';
                     }
-                    _password = value;
                     return null;
+                  },
+                  onSaved: (value) {
+                    _password = value!;
                   },
                 ),
                 const SizedBox(height: 16.0),
@@ -208,8 +207,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (value != _password) {
                       return 'Mật khẩu không khớp';
                     }
-                    _confirmPassword = value;
                     return null;
+                  },
+                  onSaved: (value) {
                   },
                 ),
                 const SizedBox(height: 32.0),
@@ -244,17 +244,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               .doc(newUser.uid)
                               .set(user.toMap());
 
-                          // Lưu trạng thái đăng nhập vào SharedPreferences (có thể không cần thiết ở đây)
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('isLoggedIn', false); // Đặt thành false sau khi đăng ký
-
                           // Hiển thị thông báo cho người dùng
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Một email xác thực đã được gửi đến hộp thư của bạn. Vui lòng kiểm tra và xác minh tài khoản của bạn.')),
+                            const SnackBar(content: Text(
+                                'Một email xác thực đã được gửi đến hộp thư của bạn. Vui lòng kiểm tra và xác minh tài khoản của bạn.')),
                           );
 
                           // Điều hướng đến SignInScreen
-                          Navigator.pushReplacementNamed(context, '/signin');
+                          Navigator.pushReplacementNamed(
+                              context, '/signin');
                         }
                       } on FirebaseAuthException catch (e) {
                         print('Lỗi đăng ký: ${e.code} - ${e.message}');
